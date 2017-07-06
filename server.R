@@ -27,7 +27,7 @@ shinyServer(function(input, output,session) {
 
 
 DB <- reactive(input$MegaDB$datapath)
-GIS <- reactive(input$WMU_Shp$datapath[1])
+GIS <- reactive(input$WMU_Shp$datapath)
 
   output$myplot <- renderPlot({
 
@@ -160,7 +160,7 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
     # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
 
-    GISInput <- input$WMU_Shp$datapath
+    GISInput <- GIS()
     print(paste("GIS Input=", GISInput)) #input$WMU_Shp$datapath[1])
     # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
 
