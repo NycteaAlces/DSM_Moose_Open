@@ -95,7 +95,7 @@ shinyServer(function(input, output) {
    })
   
     output$myplot2 <- renderPlot({
-     plot(x, 1:10)
+     plot(1:10, 1:10)
    })
 
 
