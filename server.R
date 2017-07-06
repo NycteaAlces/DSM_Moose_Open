@@ -103,10 +103,10 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
 
 
   output$myplot2 <- renderPlot({
-    ##########################################
-    #### Plot the moose observations
-    ##########################################
-    inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
+####################################################################
+      #Simply create the dataframe with distance data for mapping
+#####################################################################      
+      inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
      # print(inFile)
     if (is.null(inFile))
       return(NULL)
@@ -152,12 +152,16 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
 
 
     close(myconn)
+      
+####################################################################
+      #Simply create the dataframe with distance data for mapping
+#####################################################################   
     # WMUPolyLayerFile <- input$WMU_Shp$datapath
     # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
 
-    GISInput <- as.character(input$WMU_Shp$datapath)
-    print("GIS Input=",GISInput) #input$WMU_Shp$datapath[1])
+    GISInput <- input$WMU_Shp$datapath
+    print("GIS Input=", GISInput) #input$WMU_Shp$datapath[1])
     # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
 
     survey.area359.TTM <- readOGR(GISInput, substr(basename(GISInput),1,nchar(basename(GISInput))-4))
@@ -199,9 +203,6 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
     p <- p + geom_point(aes(x=))
 
-    ##########################################
-    #### END SECTION - Plot the moose observations
-    ##########################################
 
       plot(p)
 
