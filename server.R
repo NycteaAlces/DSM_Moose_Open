@@ -107,7 +107,7 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
     #### Plot the moose observations
     ##########################################
     inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
-  print(inFile)
+     # print(inFile)
     if (is.null(inFile))
       return(NULL)
     DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
@@ -156,8 +156,8 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
     # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
 
-    GISInput <- as.character(input$WMU_Shp$datapath[1])
-    print("GIS Input=",GIS()) #input$WMU_Shp$datapath[1])
+    GISInput <- as.character(input$WMU_Shp$datapath)
+    print("GIS Input=",GISInput) #input$WMU_Shp$datapath[1])
     # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
 
     survey.area359.TTM <- readOGR(GISInput, substr(basename(GISInput),1,nchar(basename(GISInput))-4))
