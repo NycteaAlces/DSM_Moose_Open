@@ -87,7 +87,7 @@ shinyServer(function(input, output) {
     model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
     ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
-x <- 1,4,8,4,2,3,4,5,6,7
+    x <- 1,4,8,4,2,3,4,5,6,7
 
     output$myplot <- renderPlot({
      plot(ddf.1.moos, main=("Global detection function for moose, HN-Cos, no truncation"))
