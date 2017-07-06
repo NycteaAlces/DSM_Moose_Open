@@ -93,9 +93,9 @@ shinyServer(function(input, output) {
      plot(ddf.1.moos, main=("Global detection function for moose, HN-Cos, no truncation"))
 
    })
-
+  x <- 1,4,8,4,2,3,4,5,6,7
   output$myplot2 <- renderPlot({
-    plot(1:100, 1:100)
+    plot(x, 1:10)
  })
 
 
