@@ -1,11 +1,11 @@
 library(shiny)
-  ns <- NS(id)
+
 shinyUI(pageWithSidebar(
   headerPanel("Alberta Aerial Ungulate Survey Population Estimator"),
   sidebarPanel(
     fileInput('MegaDB', 'Step 1. Choose your Access database to commence distance sampling analysis',
               accept=c('.accdb', '.mdb')),
-    fileInput(ns("WMU_Shp"), 'Step 2. Choose your WMU Polygon Shapefile',
+    fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile',
               accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
   #  fileInput('Strata_Shp', 'Step 2. Choose your Strata Polygon Shapefile',
   #            accept=c('.shp')),
