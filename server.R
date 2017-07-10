@@ -161,10 +161,10 @@ GIS <- reactive(input$WMU_Shp$datapath[1])
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
 
     GISInput <- GIS()
-    print(paste("GIS Input=", GISInput)) #input$WMU_Shp$datapath[1])
+    print(paste("GIS Input=", GISInput)) #input$WMU_Shp$datapath[6])
     # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
 
-    survey.area359.TTM <- readOGR(input$WMU_Shp$datapath[1], input$WMU_Shp$Name)#substr(basename(GISInput),1,nchar(basename(GISInput))-4))
+    survey.area359.TTM <- readOGR(input$WMU_Shp$datapath[6], input$WMU_Shp$Name)#substr(basename(GISInput),1,nchar(basename(GISInput))-4))
     # survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
     # survey.transects359.TTM <- readOGR(dsn=PolyLineTransflown, layer=substr(basename(PolyLineTransflown),1,nchar(basename(PolyLineTransflown))-4))
 
