@@ -1,6 +1,7 @@
 library(shiny)
 
 shinyUI(pageWithSidebar(
+  ns <- NS(id)
   headerPanel("Alberta Aerial Ungulate Survey Population Estimator"),
   sidebarPanel(
     fileInput('MegaDB', 'Step 1. Choose your Access database to commence distance sampling analysis',
