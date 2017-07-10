@@ -1,0 +1,23 @@
+
+shpWMUInput <- function(id, label, btn){
+  ns <- NS(id)
+  tagList(
+    bsModal(ns("modal_shp"), "Mask climate map overlays to a shapefile", btn, size="large",
+      fluidRow(
+        column(12,
+          fileInput(ns("shp_file"), label=label, accept=c(".shp",".dbf",".sbn",".sbx",".shx",".prj"), multiple=TRUE, width="100%")
+        )
+      ),
+      tabsetPanel(
+        tabPanel("Original shapefile", plotOutput(ns("Shp_Plot"), height="auto"), value="original"),
+        tabPanel("Final overlay", leafletOutput(ns("Map")), value="final"),
+        tabPanel("Summary", verbatimTextOutput(ns("Map_Summary")), value="final_summary"),
+        tabPanel("Data", dataTableOutput(ns("Map_Table")), value="final_table"),
+        id=ns("tp_shp")
+      ),
+      br(),
+      uiOutput(ns("Mask_Btn")),
+      uiOutput(ns("Mask_Complete"))
+    )
+  )
+}
