@@ -23,8 +23,8 @@ shinyUI(pageWithSidebar(
                ),
   mainPanel(
      tabsetPanel(
-      tabPanel("Main", plotOutput("myplot")),
-      tabPanel("Main", plotOutput("myplot2"))
+      tabPanel("Main", plotOutput("myplot"),
+                       plotOutput("myplot2"))
    
   )
 ))
