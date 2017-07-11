@@ -23,9 +23,9 @@ shinyUI(pageWithSidebar(
                ),
   mainPanel(
      tabsetPanel(
-      tabPanel("Overview", plotOutput("myplot"),
+      tabPanel("Moose", plotOutput("myplot"),
                        plotOutput("myplot2")),
-       tabPanel("Aircraft comparison", plotOutput("myplot3"))
+       tabPanel("Mule Deer", plotOutput("myplot3"))
    
   ))
 ))
