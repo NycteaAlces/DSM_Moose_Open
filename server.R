@@ -160,20 +160,20 @@ GIS <- reactive(input$WMU_Shp$datapath)#[6])
     # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
 
-    #GISInput <- GIS()
+    GISInput <- GIS()
     print(paste("GIS Input=", GIS())) #input$WMU_Shp$datapath[6])
     # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
 
      uploadShpfile <- reactive({
-    if (!is.null(GIS()){
-      shpDF <- GIS()
+    if (!is.null(GIS_Input){
+      shpDF <- GIS_Input
       prevWD <- getwd()
-      uploadDirectory <- dirname(GIS()$datapath[1])
+      uploadDirectory <- dirname(GIS_Input$datapath[1])
       setwd(uploadDirectory)
-      for (i in 1:nrow(GIS())){
-        file.rename(GIS()$datapath[i], GIS()$name[i])
+      for (i in 1:nrow(GIS_Input)){
+        file.rename(GIS_Input$datapath[i], GIS_Input$name[i])
       }
-      shpName <- GIS()$name[grep(x=shpDF$name, pattern="*.shp")]
+      shpName <- GIS_Input$name[grep(x=shpDF$name, pattern="*.shp")]
       shpPath <- paste(uploadDirectory, shpName, sep="/")
       setwd(prevWD)
       shpFile <- readShapePoly(shpPath)
