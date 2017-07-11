@@ -173,8 +173,10 @@ GIS <- reactive(input$WMU_Shp$datapath)#[6])
       print(paste("Directory name:",dir))
     for ( i in 1:nrow(myshape)) {
     file.rename(myshape[i,4], paste0(dir,"/",myshape[i,1]))}
-    
+      
     getshp <- list.files(dir, pattern="*.shp", full.names=TRUE)
+      
+      print(paste("Shapefile name:",getshp))
       shape<-readShapePoly(getshp)
       
     survey.area359.TTM <- readShapePoly(shape)
