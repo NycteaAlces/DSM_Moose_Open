@@ -13,7 +13,7 @@ shinyUI(pageWithSidebar(
   #            accept=c('.shp')),
   #  fileInput('TransFlown_Shp', 'Step 2. Choose your Flown Transects Shapefile',
   #            accept=c('.shp')),
-   
+   sliderInput(sliderID, "slide me", 0, 100, 1),
     tags$hr(),
     tags$b("Select your species:"),
     checkboxInput('moos', 'Moose', TRUE),
@@ -27,5 +27,6 @@ shinyUI(pageWithSidebar(
     tableOutput('contents'),
     plotOutput("myplot"),
     plotOutput("myplot2")
-  )
+  ),
+  tabPanel(
 ))
