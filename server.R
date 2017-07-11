@@ -177,16 +177,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
      }
       
       
- GetShapefile2 <- function(InShapefile, OutShapefile){
-    if (is.null(InShapefile)) 
-        return(NULL)  
-    dir<-dirname(InShapefile[1,4])
-      print(paste("Directory name:",dir))
-    for ( i in 1:nrow(InShapefile)) {
-    file.rename(InShapefile[i,4], paste0(dir,"/",InShapefile[i,1]))}
-    OutShapefile <- grep(list.files(dir, pattern="*.shp", full.names=TRUE), pattern="*.xml", inv=T, value=T)
-     }
-      
+     
       
     survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
     #survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
@@ -235,4 +226,8 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
 
  })
+    
+    output$myplot3 <- renderPlot({
+        plot(1:10,1:10)
+        })
     })
