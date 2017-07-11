@@ -22,10 +22,9 @@ shinyUI(pageWithSidebar(
     radioButtons('quote', 'Quote', c(None='','Double Quote'='"', 'Single Quote'="'"))        
                ),
   mainPanel(
-    tableOutput('contents'),
-    plotOutput("myplot"),
-    plotOutput("myplot2"),
-    tabsetPanel(
-      tabPanel("Paste test", print("Hello"))
+     tabsetPanel(
+      tabPanel("Main", plotOutput("myplot")),
+      tabPanel("Main", plotOutput("myplot2"))
+   
   )
 ))
