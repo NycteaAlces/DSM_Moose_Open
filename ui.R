@@ -3,7 +3,6 @@ library(shiny)
 shinyUI(pageWithSidebar(
   headerPanel("Alberta Aerial Ungulate Survey Population Estimator"),
   sidebarPanel(
-  # sliderInput("slider","Slide me", 0, 100, 1),
     fileInput('MegaDB', 'Step 1. Choose your Access database to commence distance sampling analysis',
               accept=c('.accdb', '.mdb')),
     fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile File - Note include all shapefile components (i.e. *.shp, *.dbf, *.sbn, etc.)',
@@ -13,7 +12,7 @@ shinyUI(pageWithSidebar(
   #            accept=c('.shp')),
   #  fileInput('TransFlown_Shp', 'Step 2. Choose your Flown Transects Shapefile',
   #            accept=c('.shp')),
-   sliderInput("truncation", "slide me", min=0, max=1000, value=425),
+   sliderInput("truncation", "Step 3: Choose right truncation distance", min=0, max=1000, value=425, step = 25),
     tags$hr(),
     tags$b("Select your species:"),
     checkboxInput('moos', 'Moose', TRUE),
