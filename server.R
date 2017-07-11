@@ -175,19 +175,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     OutShapefile <- grep(list.files(dir, pattern="*.shp", full.names=TRUE), pattern="*.xml", inv=T, value=T)
      }
       
-    #  myshape<- input$WMU_Shp
-     # if (is.null(myshape)) 
-      #  return(NULL)       
-      
-   # dir<-dirname(myshape[1,4])
-   #   print(paste("Directory name:",dir))
-   # for ( i in 1:nrow(myshape)) {
-    #file.rename(myshape[i,4], paste0(dir,"/",myshape[i,1]))}
-      
-    #getshp <- grep(list.files(dir, pattern="*.shp", full.names=TRUE), pattern="*.xml", inv=T, value=T)
-      
-   #   print(paste("Shapefile name:",getshp))
-  #    print(paste("Layer Name:", substr(basename(getshp),1,nchar(basename(getshp))-4)))
+
 
     survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))#substr(basename(GISInput),1,nchar(basename(GISInput))-4))
     # survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
