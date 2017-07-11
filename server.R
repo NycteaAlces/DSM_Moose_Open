@@ -164,6 +164,33 @@ GIS <- reactive(input$WMU_Shp$datapath[6])
     print(paste("GIS Input=", GIS())) #input$WMU_Shp$datapath[6])
     # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
 
+     uploadShpfile <- reactive({
+    if (!is.null(GIS()){
+      shpDF <- GIS()
+      prevWD <- getwd()
+      uploadDirectory <- dirname(GIS()$datapath[1])
+      setwd(uploadDirectory)
+      for (i in 1:nrow(GIS())){
+        file.rename(GIS()$datapath[i], GIS()$name[i])
+      }
+      shpName <- GIS()$name[grep(x=shpDF$name, pattern="*.shp")]
+      shpPath <- paste(uploadDirectory, shpName, sep="/")
+      setwd(prevWD)
+      shpFile <- readShapePoly(shpPath)
+      return(shpFile)
+    } else {
+      return()
+    }
+  })
+  
+   
+  output$map <- renderPlot({
+    if (!is.null(uploadShpfile())){
+      plot(uploadShpfile())
+  }
+  })  
+      
+      
     survey.area359.TTM <- readOGR(GIS(), substr(basename(GISInput),1,nchar(basename(GISInput))-4))#substr(basename(GISInput),1,nchar(basename(GISInput))-4))
     # survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
     # survey.transects359.TTM <- readOGR(dsn=PolyLineTransflown, layer=substr(basename(PolyLineTransflown),1,nchar(basename(PolyLineTransflown))-4))
