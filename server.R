@@ -176,11 +176,21 @@ GetShapefile <- function(InShapefile, OutShapefile){
     OutShapefile <- grep(list.files(dir, pattern="*.shp", full.names=TRUE), pattern="*.xml", inv=T, value=T)
      }
       
-
+GetShapefile2 <- function(InShapefile, OutShapefile){
+    if (is.null(InShapefile)) 
+        return(NULL)  
+    dir<-dirname(InShapefile[1,4])
+      print(paste("Directory name:",dir))
+    for ( i in 1:nrow(InShapefile)) {
+    file.rename(InShapefile[i,4], paste0(dir,"/",InShapefile[i,1]))}
+    OutShapefile <- grep(list.files(dir, pattern="*.shp", full.names=TRUE), pattern="*.xml", inv=T, value=T)
+     }
+      
+  
     survey.area359.TTM <- readOGR(GetShapefile(reactive(input$WMU_Shp)), substr(basename(reactive(input$WMU_Shp)),1,nchar(basename(reactive(input$WMU_Shp)))-4))
     #survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
     #survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
-   survey.transects359.TTM <- readOGR(GetShapefile(reactive(input$TransFlown_Shp), substr(basename(GetShapefile(reactive(input$TransFlown_Shp))),1,nchar(basename(GetShapefile(reactive(input$TransFlown_Shp))))-4)))
+   survey.transects359.TTM <- readOGR(GetShapefile2(reactive(input$TransFlown_Shp), substr(basename(GetShapefile2(reactive(input$TransFlown_Shp))),1,nchar(basename(GetShapefile2(reactive(input$TransFlown_Shp))))-4)))
 
 
     obs.table.MOOS <- data.frame(cbind(object = DistanceInput$object.ID, Region.Label = DistanceInput$Region.Label, Sample.Label = DistanceInput$TID, distance = DistanceInput$distance, size = DistanceInput$size))
