@@ -177,8 +177,8 @@ GetShapefile <- function(InShapefile, OutShapefile){
      }
       
 
-    #survey.area359.TTM <- readOGR(GetShapefile(reactive(input$WMU_Shp)), substr(basename(reactive(input$WMU_Shp)),1,nchar(basename(reactive(input$WMU_Shp)))-4))
-    survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
+    survey.area359.TTM <- readOGR(GetShapefile(reactive(input$WMU_Shp)), substr(basename(reactive(input$WMU_Shp)),1,nchar(basename(reactive(input$WMU_Shp)))-4))
+    #survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
     #survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
    # survey.transects359.TTM <- readOGR(GetShapefile(input$TransFlown_Shp, substr(basename(GetShapefile(input$TransFlown_Shp)),1,nchar(basename(GetShapefile(input$TransFlown_Shp)))-4)))
 
