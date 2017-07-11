@@ -186,7 +186,7 @@ GetShapefile2 <- function(InShapefile, OutShapefile){
     OutShapefile <- grep(list.files(dir, pattern="*.shp", full.names=TRUE), pattern="*.xml", inv=T, value=T)
      }
       
-    WMU <- reactive(input$WMU_Shp)
+    WMU <- tagList(reactive(input$WMU_Shp))
     survey.area359.TTM <- readOGR(GetShapefile(WMU), substr(basename(GetShapefile(WMU)),1,nchar(basename(GetShapefile(WMU)))-4))
     #survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
     #survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
