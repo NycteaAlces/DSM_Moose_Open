@@ -27,7 +27,7 @@ shinyUI(pageWithSidebar(
                  c(None='',
                    'Double Quote'='"',
                    'Single Quote'="'"),
-                 'Double Quote'),
+                 'Double Quote')
          
                ),
   mainPanel(
