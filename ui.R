@@ -5,8 +5,9 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     fileInput('MegaDB', 'Step 1. Choose your Access database to commence distance sampling analysis',
               accept=c('.accdb', '.mdb')),
-    fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile',
-              accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
+ #   fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile',
+  #            accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
+    shpPolyInput("user_shapefile", "Upload polygon shapefile", "btn_modal_shp"),
   #  fileInput('Strata_Shp', 'Step 2. Choose your Strata Polygon Shapefile',
   #            accept=c('.shp')),
   #  fileInput('TransFlown_Shp', 'Step 2. Choose your Flown Transects Shapefile',
