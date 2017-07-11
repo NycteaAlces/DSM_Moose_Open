@@ -179,8 +179,8 @@ GIS <- reactive(input$WMU_Shp$datapath)#[6])
       print(paste("Shapefile name:",getshp))
       shape<-readShapePoly(getshp)
       
-    survey.area359.TTM <- readShapePoly(shape)
-    #survey.area359.TTM <- readOGR(GIS(), substr(basename(GISInput),1,nchar(basename(GISInput))-4))#substr(basename(GISInput),1,nchar(basename(GISInput))-4))
+    #survey.area359.TTM <- readShapePoly(shape)
+    survey.area359.TTM <- readOGR(getshp, substr(basename(getshp),1,nchar(basename(GISInput))-4))#substr(basename(GISInput),1,nchar(basename(GISInput))-4))
     # survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
     # survey.transects359.TTM <- readOGR(dsn=PolyLineTransflown, layer=substr(basename(PolyLineTransflown),1,nchar(basename(PolyLineTransflown))-4))
 
