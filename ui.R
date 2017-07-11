@@ -25,5 +25,7 @@ shinyUI(pageWithSidebar(
     tableOutput('contents'),
     plotOutput("myplot"),
     plotOutput("myplot2")
+    tabsetPanel(
+      tabPanel("Paste test", print("Hello"))
   )
 ))
