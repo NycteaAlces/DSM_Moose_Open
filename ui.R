@@ -23,8 +23,9 @@ shinyUI(pageWithSidebar(
                ),
   mainPanel(
      tabsetPanel(
-      tabPanel("Main", plotOutput("myplot"),
-                       plotOutput("myplot2"))
+      tabPanel("Overview", plotOutput("myplot"),
+                       plotOutput("myplot2")),
+       tabPanel("Aircraft comparison", plotOutput(1:10, 1:10))
    
   ))
 ))
