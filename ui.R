@@ -21,7 +21,7 @@ shinyUI(pageWithSidebar(
     checkboxInput('mude', 'Mule deer', TRUE),
     checkboxInput('wapt', 'Elk', TRUE),
     radioButtons('cov', 'Covariates', c('Crown Closure' ='CC', Activity='ACT')),
-    radioButtons('quote', 'Quote', c(None='','Double Quote'='"', 'Single Quote'="'"), Double Quote')         
+    radioButtons('quote', 'Quote', c(None='','Double Quote'='"', 'Single Quote'="'"), 'Double Quote')         
                ),
   mainPanel(
     tableOutput('contents'),
