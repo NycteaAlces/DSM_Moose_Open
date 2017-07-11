@@ -191,7 +191,7 @@ GetShapefile2 <- function(InShapefile, OutShapefile){
     #survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
     #survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
      transects <- reactive(input$TransFlown_Shp)
-      survey.transects359.TTM <- readOGR(GetShapefile2(transects), substr(basename(GetShapefile2(transects)),1,nchar(basename(GetShapefile2(transects))-4)))
+     # survey.transects359.TTM <- readOGR(GetShapefile2(transects), substr(basename(GetShapefile2(transects)),1,nchar(basename(GetShapefile2(transects))-4)))
 
 
     obs.table.MOOS <- data.frame(cbind(object = DistanceInput$object.ID, Region.Label = DistanceInput$Region.Label, Sample.Label = DistanceInput$TID, distance = DistanceInput$distance, size = DistanceInput$size))
@@ -223,7 +223,7 @@ GetShapefile2 <- function(InShapefile, OutShapefile){
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
 
-    p <- p + geom_line(aes(x=long,y=lat,group=group), data = survey.transects359.TTM, colour = "gray" )
+    #p <- p + geom_line(aes(x=long,y=lat,group=group), data = survey.transects359.TTM, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
     p <- p + geom_point(aes(x=))
