@@ -3,7 +3,7 @@ library(shiny)
 shinyUI(pageWithSidebar(
   headerPanel("Alberta Aerial Ungulate Survey Population Estimator"),
   sidebarPanel(
-    sliderInput("slider","Slide me", 0, 100, 1),
+   # sliderInput("slider","Slide me", 0, 100, 1),
     fileInput('MegaDB', 'Step 1. Choose your Access database to commence distance sampling analysis',
               accept=c('.accdb', '.mdb')),
  #   fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile',
@@ -27,8 +27,7 @@ shinyUI(pageWithSidebar(
                  c(None='',
                    'Double Quote'='"',
                    'Single Quote'="'"),
-                 'Double Quote')
-         
+                 'Double Quote')         
                ),
   mainPanel(
     tableOutput('contents'),
