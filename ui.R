@@ -27,6 +27,5 @@ shinyUI(pageWithSidebar(
     tableOutput('contents'),
     plotOutput("myplot"),
     plotOutput("myplot2")
-  ),
-  tabPanel(
+  )
 ))
