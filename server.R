@@ -166,7 +166,7 @@ GIS <- reactive(input$WMU_Shp)
 
       #Handle the file names such that Shiny doesn't get confused with shapefiles
 
-GetShapefile <- function(id, InShapefile, OutShapefile){
+GetShapefile <- function(InShapefile, OutShapefile){
    # ns <- NS(OutShapefile)
     if (is.null(InShapefile)) 
         return(NULL)  
