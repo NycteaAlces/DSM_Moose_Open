@@ -13,7 +13,7 @@ shinyUI(pageWithSidebar(
   #  fileInput('TransFlown_Shp', 'Step 2. Choose your Flown Transects Shapefile',
   #            accept=c('.shp')),
     tagList(
-      sliderInput("slider","Slide me", 0, 100, 1)
+      sliderInput("slider","Slide me", 0, 100, 1)),
     tags$hr(),
     tags$b("Select your species:"),
     checkboxInput('moos', 'Moose', TRUE),
