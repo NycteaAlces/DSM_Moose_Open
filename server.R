@@ -170,7 +170,7 @@ GIS <- reactive(input$WMU_Shp$datapath)#[6])
         return(NULL)       
       
     dir<-dirname(myshape[1,4])
-      
+      print(paste("Directory name:",dir))
     for ( i in 1:nrow(myshape)) {
     file.rename(myshape[i,4], paste0(dir,"/",myshape[i,1]))}
     
