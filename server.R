@@ -602,7 +602,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     output$WAPT_DF <- renderPlot({
    
         inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
-         # print(inFile)
+        print(inFile)
         if (is.null(inFile))
           return(NULL)
         
