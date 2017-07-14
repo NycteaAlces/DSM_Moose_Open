@@ -18,7 +18,7 @@ tables <- function (sppcode, output)
     names(datasheet) <- sub("/", "", names(datasheet))
 
 
-
+  #Create the dataframe for the transects that were flown
     transflown <- datasheet[!duplicated(datasheet[, c("Transect.ID", "Stratum")]), ]
     transflown <- transflown[!is.na(transflown$Stratum),]
     transflown$DistancePerp <- " "
@@ -27,13 +27,13 @@ tables <- function (sppcode, output)
     transflown$Covariate.2 <- " "
     transflown <- unique(transflown)
 
-
+  #Create the observation dataset with moose groups observed
     datasheet.2 <- datasheet[ which(datasheet$MOOS.GroupSize >0),]
-    datasheet.2 <- unique(datasheet.2)
+    datasheet.2 <- unique(datasheet.2) #purge duplicates
 
 
-    DistancePreInput.MOOS.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
-    DistancePreInput.MOOS.2 <- unique(DistancePreInput.MOOS.2)
+    DistancePreInput.MOOS.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum")) #merge datasets to get the distance input layer
+    DistancePreInput.MOOS.2 <- unique(DistancePreInput.MOOS.2) #purge duplicates
 
 
     DistancePreInput.MOOS <- merge(datasheet.2, DistancePreInput.MOOS.2, all=T)
