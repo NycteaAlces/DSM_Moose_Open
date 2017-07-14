@@ -622,7 +622,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
         datasheet.2 <- datasheet[ which(datasheet$WAPT.GroupSize >0),]
         datasheet.2 <- unique(datasheet.2)
-
+head(datasheet.2)
         DistancePreInput.WAPT.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
         DistancePreInput.WAPT.2 <- unique(DistancePreInput.WAPT.2)
 
