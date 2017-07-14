@@ -603,8 +603,8 @@ GetShapefile <- function(InShapefile, OutShapefile){
    
         inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
         print(inFile)
-        if (is.null(inFile))
-          return(NULL)
+      #  if (is.null(inFile))
+      #    return(NULL)
         
         DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=", inFile)
         myconn <- odbcDriverConnect(DB)
