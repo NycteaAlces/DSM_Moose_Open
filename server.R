@@ -601,7 +601,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     ###########################################################    
     output$WAPT_DF <- renderPlot({
    
-       inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
+        inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
          # print(inFile)
         if (is.null(inFile))
           return(NULL)
@@ -654,7 +654,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
         DistanceInput2 <- unique(DistanceInput2)
 
 
-        model4 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
+   #     model4 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
         ddf.1.wapt <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
         plot(ddf.1.wapt, main=("Global detection function for elk, HN-Cos, no truncation"))             
