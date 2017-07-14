@@ -1,19 +1,20 @@
-library(shiny)
-library(datasets)
 
 
-library(RODBC)
-require(RODBC)
-require(dplyr)
-require(Distance)
-require(mrds)
-library(ggplot2)
-library(rgdal)
-library(rgeos)
-library(dsm)
-library(knitr)
-library(maptools)
-library(gridExtra)
+#install and load required packages
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg))
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+
+# usage
+packages <- c("shiny", "RODBC","dplyr","Distance",
+  "mrds", "ggplot2", "rgdal",
+  "rgeos","dsm","knitr","maptools","gridExtra")
+
+ipak(packages)
+
 
 ui <- fluidPage(
     verbatimTextOutput(("debug"))
