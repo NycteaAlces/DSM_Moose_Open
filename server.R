@@ -527,5 +527,70 @@ GetShapefile <- function(InShapefile, OutShapefile){
     })
     
     
+################################################
+####WTDE DF
+###################################################
+  
+    output$WTDE_DF <- renderPlot({
+    inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
+     # print(inFile)
+    if (is.null(inFile))
+      return(NULL)
+    DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
+    myconn <- odbcDriverConnect(DB)
+    strat <- sqlFetch(myconn, "strata")
+    strat_num <- nrow(strat)
+    results_num_index <- as.integer(strat_num) + 1
+
+    datasheet <- as.data.frame(sqlQuery(myconn, "select * from datasheet"))
+
+    names(datasheet) <- sub(" ", ".", names(datasheet))
+    names(datasheet) <- sub(" ", ".", names(datasheet))
+    names(datasheet) <- sub("/", "", names(datasheet))
+    names(datasheet) <- sub("/", "", names(datasheet))
+
+
+
+    transflown <- datasheet[!duplicated(datasheet[, c("Transect.ID", "Stratum")]), ]
+    transflown <- transflown[!is.na(transflown$Stratum),]
+    transflown$DistancePerp <- " "
+    transflown$WTDE.GroupSize <- " "
+    transflown$Covariate.1 <- " "
+    transflown$Covariate.2 <- " "
+    transflown <- unique(transflown)
+
+
+    datasheet.2 <- datasheet[ which(datasheet$WTDE.GroupSize >0),]
+    datasheet.2 <- unique(datasheet.2)
+
+
+    DistancePreInput.WTDE.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
+    DistancePreInput.WTDE.2 <- unique(DistancePreInput.WTDE.2)
+
+
+    DistancePreInput.WTDE <- merge(datasheet.2, DistancePreInput.WTDE.2, all=T)
+    DistancePreInput.WTDE <- unique(DistancePreInput.WTDE)
+
+
+    DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.WTDE$ID), Region.Label= DistancePreInput.WTDE$Stratum,Area = as.numeric(DistancePreInput.WTDE$Stratum.Area), TID = as.numeric(DistancePreInput.WTDE$Transect.ID), TLENGTH = as.numeric(DistancePreInput.WTDE$Transect.Length), Effort=as.numeric(DistancePreInput.WTDE$Length)/1000, distance= as.numeric(DistancePreInput.WTDE$DistancePerp), size=as.numeric(DistancePreInput.WTDE$WTDE.GroupSize),CC=as.factor(DistancePreInput.WTDE$Covariate.1), Activity=as.factor(DistancePreInput.WTDE$Covariate.2)))
+
+    DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
+
+
+    close(myconn)
+    
+
+    DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.WTDE$ID), Region.Label= DistancePreInput.WTDE$Stratum,Area = as.numeric(DistancePreInput.WTDE$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.WTDE$Transect.ID), Effort = as.numeric(DistancePreInput.WTDE$Transect.Length), distance= as.numeric(DistancePreInput.WTDE$DistancePerp), size=as.numeric(DistancePreInput.WTDE$WTDE.GroupSize),CC=as.factor(DistancePreInput.WTDE$Covariate.1), Activity=as.factor(DistancePreInput.WTDE$Covariate.2)))
+
+    DistanceInput2 <- unique(DistanceInput2)
+
+
+    model3 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
+    ddf.1.wtde <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+
+    plot(ddf.1.wtde, main=("Global detection function for white-tailed deer, HN-Cos, no truncation"))
+        
+        
+        })
     
     })
