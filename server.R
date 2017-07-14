@@ -113,9 +113,7 @@ GIS <- reactive(input$WMU_Shp)
 
 
   output$myplot2 <- renderPlot({
-####################################################################
-      #Simply create the dataframe with distance data for mapping
-#####################################################################      
+    
       inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
      # print(inFile)
     if (is.null(inFile))
@@ -162,10 +160,7 @@ GIS <- reactive(input$WMU_Shp)
 
 
     close(myconn)
-      
-####################################################################
-      #Simply create the dataframe with distance data for mapping
-#####################################################################   
+  
     # WMUPolyLayerFile <- input$WMU_Shp$datapath
     # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
@@ -305,15 +300,15 @@ GetShapefile <- function(InShapefile, OutShapefile){
         
         
         })
+ 
+#####################################################################
+#MUDE Map
+#####################################################################   
     
     
-    
-    output$WTD_MAP <- renderPlot({
-        ####################################################################
-      #Simply create the dataframe with distance data for mapping
-           #####################################################################      
+    output$MUDE_MAP <- renderPlot({
+   
       inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
-     # print(inFile)
     if (is.null(inFile))
       return(NULL)
     DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
@@ -358,19 +353,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
 
     close(myconn)
-      
-####################################################################
-      #Simply create the dataframe with distance data for mapping
-#####################################################################   
-    # WMUPolyLayerFile <- input$WMU_Shp$datapath
-    # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
-    # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
 
-    #GISInput <- GIS()
-    #print(paste("GIS Input=", GIS())) #input$WMU_Shp$datapath[6])
-    # GISInput <- "F:/GIS_Workspace/R_Files/A_359_Boundary_TTM.shp"
-
-      #Handle the file names such that Shiny doesn't get confused with shapefiles
 
 GetShapefile <- function(InShapefile, OutShapefile){
     if (is.null(InShapefile)) 
@@ -430,6 +413,10 @@ GetShapefile <- function(InShapefile, OutShapefile){
       plot(p)
     })
     
+    
+    
+    
+    
     output$WTDE_MAP <- renderPlot({
         ####################################################################
       #Simply create the dataframe with distance data for mapping
@@ -481,9 +468,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
     close(myconn)
       
-####################################################################
-      #Simply create the dataframe with distance data for mapping
-#####################################################################   
+  
     # WMUPolyLayerFile <- input$WMU_Shp$datapath
     # StrataPolyLayerFile <-  input$Strata_Shp$datapath #User input -- Get the Strata shapefile
     # PolyLineTransflown <- input$TransFlown_Shp$datapath #User input -- Get the transects shapefile
