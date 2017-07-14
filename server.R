@@ -654,10 +654,10 @@ GetShapefile <- function(InShapefile, OutShapefile){
         DistanceInput2 <- unique(DistanceInput2)
 
 
-        model2 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
-        ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+        model4 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
+        ddf.1.wapt <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
-        plot(ddf.1.mude, main=("Global detection function for elk, HN-Cos, no truncation"))             
+        plot(ddf.1.wapt, main=("Global detection function for elk, HN-Cos, no truncation"))             
         
         
         })
@@ -774,16 +774,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
       plot(p)
     })
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  
     
     
     
