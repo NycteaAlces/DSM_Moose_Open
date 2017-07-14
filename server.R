@@ -593,8 +593,6 @@ GetShapefile <- function(InShapefile, OutShapefile){
         
         })
 
-####XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXX
     
     ###########################################################
     ###########################################################
@@ -602,63 +600,64 @@ GetShapefile <- function(InShapefile, OutShapefile){
     ###########################################################
     ###########################################################    
     output$WAPT_DF <- renderPlot({
-             inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
-     # print(inFile)
-    if (is.null(inFile))
-      return(NULL)
-    DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
-    myconn <- odbcDriverConnect(DB)
-    strat <- sqlFetch(myconn, "strata")
-    strat_num <- nrow(strat)
-    results_num_index <- as.integer(strat_num) + 1
+   
+       inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
+         # print(inFile)
+        if (is.null(inFile))
+          return(NULL)
+        DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
+        myconn <- odbcDriverConnect(DB)
+        strat <- sqlFetch(myconn, "strata")
+        strat_num <- nrow(strat)
+        results_num_index <- as.integer(strat_num) + 1
 
-    datasheet <- as.data.frame(sqlQuery(myconn, "select * from datasheet"))
+        datasheet <- as.data.frame(sqlQuery(myconn, "select * from datasheet"))
 
-    names(datasheet) <- sub(" ", ".", names(datasheet))
-    names(datasheet) <- sub(" ", ".", names(datasheet))
-    names(datasheet) <- sub("/", "", names(datasheet))
-    names(datasheet) <- sub("/", "", names(datasheet))
-
-
-
-    transflown <- datasheet[!duplicated(datasheet[, c("Transect.ID", "Stratum")]), ]
-    transflown <- transflown[!is.na(transflown$Stratum),]
-    transflown$DistancePerp <- " "
-    transflown$WAPT.GroupSize <- " "
-    transflown$Covariate.1 <- " "
-    transflown$Covariate.2 <- " "
-    transflown <- unique(transflown)
+        names(datasheet) <- sub(" ", ".", names(datasheet))
+        names(datasheet) <- sub(" ", ".", names(datasheet))
+        names(datasheet) <- sub("/", "", names(datasheet))
+        names(datasheet) <- sub("/", "", names(datasheet))
 
 
-    datasheet.2 <- datasheet[ which(datasheet$WAPT.GroupSize >0),]
-    datasheet.2 <- unique(datasheet.2)
+
+        transflown <- datasheet[!duplicated(datasheet[, c("Transect.ID", "Stratum")]), ]
+        transflown <- transflown[!is.na(transflown$Stratum),]
+        transflown$DistancePerp <- " "
+        transflown$WAPT.GroupSize <- " "
+        transflown$Covariate.1 <- " "
+        transflown$Covariate.2 <- " "
+        transflown <- unique(transflown)
 
 
-    DistancePreInput.WAPT.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
-    DistancePreInput.WAPT.2 <- unique(DistancePreInput.WAPT.2)
+        datasheet.2 <- datasheet[ which(datasheet$WAPT.GroupSize >0),]
+        datasheet.2 <- unique(datasheet.2)
 
 
-    DistancePreInput.WAPT <- merge(datasheet.2, DistancePreInput.WAPT.2, all=T)
-    DistancePreInput.WAPT <- unique(DistancePreInput.WAPT)
+        DistancePreInput.WAPT.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
+        DistancePreInput.WAPT.2 <- unique(DistancePreInput.WAPT.2)
 
 
-    DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), TID = as.numeric(DistancePreInput.WAPT$Transect.ID), TLENGTH = as.numeric(DistancePreInput.WAPT$Transect.Length), Effort=as.numeric(DistancePreInput.WAPT$Length)/1000, distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
-
-    DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
-
-
-    close(myconn)
-    
-
-    DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.WAPT$Transect.ID), Effort = as.numeric(DistancePreInput.WAPT$Transect.Length), distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
-
-    DistanceInput2 <- unique(DistanceInput2)
+        DistancePreInput.WAPT <- merge(datasheet.2, DistancePreInput.WAPT.2, all=T)
+        DistancePreInput.WAPT <- unique(DistancePreInput.WAPT)
 
 
-    model2 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
-    ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+        DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), TID = as.numeric(DistancePreInput.WAPT$Transect.ID), TLENGTH = as.numeric(DistancePreInput.WAPT$Transect.Length), Effort=as.numeric(DistancePreInput.WAPT$Length)/1000, distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
 
-    plot(ddf.1.mude, main=("Global detection function for mule deer, HN-Cos, no truncation"))
+        DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
+
+
+        close(myconn)
+
+
+        DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.WAPT$Transect.ID), Effort = as.numeric(DistancePreInput.WAPT$Transect.Length), distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
+
+        DistanceInput2 <- unique(DistanceInput2)
+
+
+        model2 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
+        ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+
+        plot(ddf.1.mude, main=("Global detection function for elk, HN-Cos, no truncation"))             
         
         
         })
