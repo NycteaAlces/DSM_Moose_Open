@@ -28,7 +28,8 @@ shinyUI(pageWithSidebar(
        tabPanel("Mule Deer", plotOutput("myplot3"),
                              plotOutput("MUDE_MAP")),
        tabPanel("White-tailed Deer", plotOutput("WTDE_DF"),
-                                     plotOutput("WTDE_MAP"))
-   
+                                     plotOutput("WTDE_MAP")),
+        tabPanel("Elk", plotOutput("WAPT_DF"),
+                                     plotOutput("WAPT_MAP")),
   ))
 ))
