@@ -299,8 +299,9 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
 
     model2 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
-    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+    ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
+    plot(ddf.1.mude, main=("Global detection function for mule deer, HN-Cos, no truncation"))
         
         
         })
