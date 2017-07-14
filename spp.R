@@ -1,4 +1,4 @@
-function (sppcode, output)  
+tables <- function (sppcode, output)  
   
   inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
      # print(inFile)
