@@ -32,4 +32,5 @@ shinyUI(pageWithSidebar(
         tabPanel("Elk", plotOutput("WAPT_DF"),
                         plotOutput("WAPT_MAP"))
 
+  ))
 ))
