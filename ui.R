@@ -11,15 +11,8 @@ shinyUI(pageWithSidebar(
     #         accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
     #fileInput('TransFlown_Shp', 'Step 3. Choose your Flown Transects Shapefile Files',
     #          accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
-   sliderInput("truncation", "Step 4: Choose right truncation distance", min=0, max=1000, value=425, step = 25),
-    tags$hr(),
-    tags$b("Select your species:"),
-    checkboxInput('moos', 'Moose', TRUE),
-    checkboxInput('wtde', 'White-tailed deer', TRUE),
-    checkboxInput('mude', 'Mule deer', TRUE),
-    checkboxInput('wapt', 'Elk', TRUE),
-    radioButtons('cov', 'Covariates', c('Crown Closure' ='CC', Activity='ACT')),
-    radioButtons('quote', 'Quote', c(None='','Double Quote'='"', 'Single Quote'="'"))        
+   sliderInput("truncation", "Step 4: Choose right truncation distance", min=0, max=1000, value=425, step = 25)
+    
                ),
   mainPanel(
      tabsetPanel(
