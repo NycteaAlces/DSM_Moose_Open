@@ -102,7 +102,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
 
 
 
-     plot(ddf.1.moos, main=("Global detection function for moose, HN-Cos, no truncation"))
+     plot(ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",truncvalue()))
 
    })
 
