@@ -14,7 +14,7 @@ packages <- c("shiny", "RODBC","dplyr","Distance",
   "rgeos","dsm","knitr","maptools","gridExtra")
 
 ipak(packages)
-
+  print <- reactive(print(paste("Selected truncation distance is:", input$truncation)))
 
 ui <- fluidPage(
     verbatimTextOutput(("debug"))
@@ -22,7 +22,7 @@ ui <- fluidPage(
 
 shinyServer(function(input, output,session) {
 
-  print <- renderText(print(paste("Selected truncation distance is:", input$truncation)))
+
     
     ###########################################################
     ###########################################################
