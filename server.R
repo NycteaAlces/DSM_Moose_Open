@@ -98,7 +98,7 @@ GIS <- reactive(input$WMU_Shp)
 
     #model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
    # ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = input$truncation)
-    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = input$truncation$right)
 
 
 
