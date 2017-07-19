@@ -22,6 +22,8 @@ ui <- fluidPage(
 
 shinyServer(function(input, output,session) {
 
+  
+  print(paste("Selected truncation distance is:", input$truncation))
     
     ###########################################################
     ###########################################################
