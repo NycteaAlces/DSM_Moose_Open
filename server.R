@@ -14,7 +14,7 @@ packages <- c("shiny", "RODBC","dplyr","Distance",
   "rgeos","dsm","knitr","maptools","gridExtra")
 
 ipak(packages)
-  print <- reactive(print(paste("Selected truncation distance is:", input$truncation)))
+#  print <- reactive(print(paste("Selected truncation distance is:", input$truncation)))
 
 ui <- fluidPage(
     verbatimTextOutput(("debug"))
@@ -96,9 +96,9 @@ GIS <- reactive(input$WMU_Shp)
     DistanceInput2 <- unique(DistanceInput2)
 
 
-    model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
+    #model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
    # ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = input$truncation)
-   # ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
 
 
