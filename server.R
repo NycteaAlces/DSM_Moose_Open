@@ -21,7 +21,10 @@ ui <- fluidPage(
 
 shinyServer(function(input, output,session) {
 
-
+#Prepare the user-input slots -- dynamic/reactive
+DB <- reactive(input$MegaDB$datapath)
+GIS <- reactive(input$WMU_Shp)
+truncvalue <- reactive(input$truncation$left)
     
     ###########################################################
     ###########################################################
@@ -32,10 +35,7 @@ shinyServer(function(input, output,session) {
     sessionInfo()
   })
 
-#Prepare the user-input slots -- dynamic/reactive
-DB <- reactive(input$MegaDB$datapath)
-GIS <- reactive(input$WMU_Shp)
-#truncvalue <- reactive(input$truncation$left)
+
   output$myplot <- renderPlot({
 
     # input$file1 will be NULL initially. After the user selects and uploads a
@@ -97,7 +97,7 @@ GIS <- reactive(input$WMU_Shp)
 
     #model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
    # ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = input$truncation)
-    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425) #input$truncation$right)
+    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = truncvalue())#425) #input$truncation$right)
 
 
 
