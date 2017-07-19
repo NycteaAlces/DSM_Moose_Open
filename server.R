@@ -14,7 +14,6 @@ packages <- c("shiny", "RODBC","dplyr","Distance",
   "rgeos","dsm","knitr","maptools","gridExtra")
 
 ipak(packages)
-#  print <- reactive(print(paste("Selected truncation distance is:", input$truncation)))
 
 ui <- fluidPage(
     verbatimTextOutput(("debug"))
@@ -36,7 +35,7 @@ shinyServer(function(input, output,session) {
 #Prepare the user-input slots -- dynamic/reactive
 DB <- reactive(input$MegaDB$datapath)
 GIS <- reactive(input$WMU_Shp)
-truncvalue <- reactive(input$truncation$left)
+#truncvalue <- reactive(input$truncation$left)
   output$myplot <- renderPlot({
 
     # input$file1 will be NULL initially. After the user selects and uploads a
