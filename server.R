@@ -24,7 +24,7 @@ shinyServer(function(input, output,session) {
 #Prepare the user-input slots -- dynamic/reactive
 DB <- reactive(input$MegaDB$datapath)
 GIS <- reactive(input$WMU_Shp)
-truncvalue <- reactive(input$truncation$left)
+truncvalue <- reactive(input$truncation)
     
     ###########################################################
     ###########################################################
