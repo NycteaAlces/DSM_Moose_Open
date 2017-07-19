@@ -24,7 +24,7 @@ shinyServer(function(input, output,session) {
 #Prepare the user-input slots -- dynamic/reactive
 DB <- reactive(input$MegaDB$datapath)
 GIS <- reactive(input$WMU_Shp)
-truncvalue <- reactive(input$truncation)
+#truncvalue <- reactive(input$truncation)
     
     ###########################################################
     ###########################################################
@@ -97,7 +97,7 @@ truncvalue <- reactive(input$truncation)
 
     #model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
    # ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = input$truncation)
-    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = truncvalue())#425) #input$truncation$right)
+    ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425) #truncation = truncvalue())#425) #input$truncation$right)
 
 
 
