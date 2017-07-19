@@ -36,7 +36,7 @@ shinyServer(function(input, output,session) {
 #Prepare the user-input slots -- dynamic/reactive
 DB <- reactive(input$MegaDB$datapath)
 GIS <- reactive(input$WMU_Shp)
-truncvalue <- reactive(input$truncation)
+truncvalue <- reactive(input$truncation$left)
   output$myplot <- renderPlot({
 
     # input$file1 will be NULL initially. After the user selects and uploads a
