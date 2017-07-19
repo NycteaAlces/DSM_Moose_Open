@@ -11,7 +11,7 @@ shinyUI(pageWithSidebar(
     #         accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
     #fileInput('TransFlown_Shp', 'Step 3. Choose your Flown Transects Shapefile Files',
     #          accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
-   sliderInput("truncation", "Step 4: Choose right truncation distance", min=0, max=1000, value=425, step = 25)
+   sliderInput("truncation", "Step 3: Choose right truncation distance", min=0, max=1000, value=425, step = 25)
     
                ),
   mainPanel(
