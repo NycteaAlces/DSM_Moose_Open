@@ -207,8 +207,8 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   }
 }
     MyLines <- points_to_line(trans.flown.vertices,long = "X", lat="y",id_field = "TID")
-    
-    
+    MyLines.sldf <- SpatialLinesDataFrame(MyLines, trans.flown.vertices, match.iD=TRUE) 
+    proj4string(MyLines) <- CRS("+init=EPSG:3400")
     
       #Handle the file names such that Shiny doesn't get confused with shapefiles
 
