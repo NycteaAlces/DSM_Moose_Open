@@ -159,13 +159,26 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.MOOS$ID), Region.Label= DistancePreInput.MOOS$Stratum,Area = as.numeric(DistancePreInput.MOOS$Stratum.Area), TID = as.numeric(DistancePreInput.MOOS$Transect.ID), TLENGTH = as.numeric(DistancePreInput.MOOS$Transect.Length), Effort=as.numeric(DistancePreInput.MOOS$Length)/1000, distance= as.numeric(DistancePreInput.MOOS$DistancePerp), size=as.numeric(DistancePreInput.MOOS$MOOS.GroupSize),CC=as.factor(DistancePreInput.MOOS$Covariate.1), Activity=as.factor(DistancePreInput.MOOS$Covariate.2)))
 
     DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
-
-
-    close(myconn)
-  
-
+#################################Create lines geometry for the transects
+    trans.flown <- sqlFetch(myconn, "transects_flown")
+    trans.all <- sqlFetch(myconn, "transects")
+    close(myconn)    
+    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
+    from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
+    trans.flown.vertices <- rbind(x.coords,y.coords)
+    MyLines <- points_to_line(trans.flown.vertices,long = "X", lat="y",id_field = "TID")
+    
+    
+    
       #Handle the file names such that Shiny doesn't get confused with shapefiles
 
+
+    
+    
+    
+
+    
 GetShapefile <- function(InShapefile, OutShapefile){
     if (is.null(InShapefile)) 
         return(NULL)  
@@ -214,8 +227,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     p <- ggplot ()
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-
-    #p <- p + geom_line(aes(x=long,y=lat,group=group), data = survey.transects359.TTM, colour = "gray" )
+    p <- p + geom_line(aes(x=long,y=lat,group=group), data = MyLines, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
     p <- p + geom_point(aes(x=))
