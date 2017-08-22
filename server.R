@@ -164,7 +164,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     trans.all <- sqlFetch(myconn, "transects")
     close(myconn)    
     trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
-  #  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
@@ -176,7 +176,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
    trans.flown.spat <- SpatialLines(l)
- trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = trans.flown)
+ trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
     
     
 
