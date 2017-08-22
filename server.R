@@ -266,7 +266,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     p <- ggplot ()
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-    p <- p + geom_path(aes(x=long,y=lat,group=TID), data = MyLines, colour = "gray" )
+    p <- p + geom_path(aes(x=long,y=lat,group=id_field), data = MyLines, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
     p <- p + geom_point(aes(x=))
