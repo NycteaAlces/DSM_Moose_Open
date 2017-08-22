@@ -169,6 +169,8 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
     trans.flown.vertices <- rbind(x.coords,y.coords)
+    
+  l <- vector("list", nrow(from.coords))
   library(sp)
   for (i in seq_along(l)){
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
