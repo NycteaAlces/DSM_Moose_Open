@@ -176,7 +176,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
    trans.flown.spat <- SpatialLines(l)
- 
+ trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = trans.flown)
     
     
 
@@ -229,7 +229,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     p <- ggplot ()
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-    p <- p + geom_line(data = trans.flown.spat, aes(x=long,y=lat,group=group), colour = "gray" )
+    p <- p + geom_path(aes(x=long,y=lat,group=group), data = trans.flown.splat.df, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
     p <- p + geom_point(aes(x=))
