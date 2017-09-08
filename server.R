@@ -674,7 +674,6 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
         datasheet.2 <- datasheet[ which(datasheet$WAPT.GroupSize >0),]
         datasheet.2 <- unique(datasheet.2)
-head(datasheet.2)
         DistancePreInput.WAPT.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
         DistancePreInput.WAPT.2 <- unique(DistancePreInput.WAPT.2)
 
@@ -682,26 +681,25 @@ head(datasheet.2)
         DistancePreInput.WAPT <- unique(DistancePreInput.WAPT)
         DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), TID = as.numeric(DistancePreInput.WAPT$Transect.ID), TLENGTH = as.numeric(DistancePreInput.WAPT$Transect.Length), Effort=as.numeric(DistancePreInput.WAPT$Length)/1000, distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
         DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
-
         close(myconn)
 
         DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.WAPT$Transect.ID), Effort = as.numeric(DistancePreInput.WAPT$Transect.Length), distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
         DistanceInput2 <- unique(DistanceInput2)
-   #     model4 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
-        head(DistanceInput2)
         ddf.1.wapt <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
-        plot(ddf.1.wapt, main=("Global detection function for elk, HN-Cos, no truncation"))             
-        # WAPT QQ-plots ----
+      
+      plot(ddf.1.wapt, main=("Global detection function for elk, HN-Cos, no truncation"))             
+       
+      
+      # WAPT QQ-plots ----
         output$WAPT_QQ <- renderPlot({
           ddf.gof(ddf.1.wapt$ddf)
-        })
-        })
+           })
+    })
  
 #####################################################################
 #WAPT Map
 #####################################################################   
-    
-    
+        
     output$WAPT_MAP <- renderPlot({
    
       inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
@@ -781,12 +779,6 @@ head(datasheet.2)
      
       
     survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
-    #survey.area359.TTM <- readOGR(GetShapefile(input$WMU_Shp), substr(basename(GetShapefile(input$WMU_Shp)),1,nchar(basename(GetShapefile(input$WMU_Shp)))-4))
-    #survey.areanon355 <- readOGR(dsn=StrataPolyLayerFile, layer=substr(basename(StrataPolyLayerFile),1,nchar(basename(StrataPolyLayerFile))-4))
-    # transects <- reactive(input$TransFlown_Shp)
-    #survey.transects359.TTM <- readOGR(GetShapefile2(input$TransFlown_Shp), substr(basename(GetShapefile2(input$TransFlown_Shp)),1,nchar(basename(GetShapefile2(input$TransFlown_Shp))-4)))
-
-
     obs.table.WAPT <- data.frame(cbind(object = DistanceInput$object.ID, Region.Label = DistanceInput$Region.Label, Sample.Label = DistanceInput$TID, distance = DistanceInput$distance, size = DistanceInput$size))
 
     m1 <- merge(obs.table.WAPT, DistancePreInput.WAPT, by.x = "object", by.y = "ID")
