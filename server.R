@@ -294,45 +294,16 @@ GetShapefile <- function(InShapefile, OutShapefile){
     trans.all <- sqlFetch(myconn, "transects")
     close(myconn)    
     trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
-  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
   
-    
-  l <- vector("list", nrow(from.coords))
-  library(sp)
-  for (i in seq_along(l)){
-    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
-    }
-   trans.flown.splat <- SpatialLines(l)
-   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
-    
-    
-    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
-  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
-  #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
-    f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
-    t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    
-    
-  l <- vector("list", nrow(from.coords))
-  library(sp)
-  for (i in seq_along(l)){
-    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
-    }
-   trans.flown.splat <- SpatialLines(l)
-   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
-
 
     DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.MUDE$ID), Region.Label= DistancePreInput.MUDE$Stratum,Area = as.numeric(DistancePreInput.MUDE$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.MUDE$Transect.ID), Effort = as.numeric(DistancePreInput.MUDE$Transect.Length), distance= as.numeric(DistancePreInput.MUDE$DistancePerp), size=as.numeric(DistancePreInput.MUDE$MUDE.GroupSize),CC=as.factor(DistancePreInput.MUDE$Covariate.1), Activity=as.factor(DistancePreInput.MUDE$Covariate.2)))
-
     DistanceInput2 <- unique(DistanceInput2)
-
-
     model2 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
     ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
-
     plot(ddf.1.mude, main=("Global detection function for mule deer, HN-Cos, no truncation"))
       # MUDE QQ-plots ----
     output$MUDE_QQ <- renderPlot({
