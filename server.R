@@ -685,7 +685,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
 
         DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.WAPT$ID), Region.Label= DistancePreInput.WAPT$Stratum,Area = as.numeric(DistancePreInput.WAPT$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.WAPT$Transect.ID), Effort = as.numeric(DistancePreInput.WAPT$Transect.Length), distance= as.numeric(DistancePreInput.WAPT$DistancePerp), size=as.numeric(DistancePreInput.WAPT$WAPT.GroupSize),CC=as.factor(DistancePreInput.WAPT$Covariate.1), Activity=as.factor(DistancePreInput.WAPT$Covariate.2)))
         DistanceInput2 <- unique(DistanceInput2)
-        ddf.1.wapt <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
+        ddf.1.wapt <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425, debug.level = 3)
       
       plot(ddf.1.wapt, main=("Global detection function for elk, HN-Cos, no truncation"))             
        
