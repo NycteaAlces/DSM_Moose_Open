@@ -7,10 +7,6 @@ shinyUI(pageWithSidebar(
               accept=c('.accdb', '.mdb')),
     fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile File (Alberta 10TM) - Note include all shapefile components (i.e. *.shp, *.dbf, *.sbn, etc.)',
              accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
-    #fileInput('Strata_Shp', 'Step 2. Choose your Strata Polygon Shapefile Files',
-    #         accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
-    #fileInput('TransFlown_Shp', 'Step 3. Choose your Flown Transects Shapefile Files',
-    #          accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
    sliderInput("truncation", "Step 3: Choose right truncation distance", min=0, max=1000, value=800, step = 25)
     
                ),
