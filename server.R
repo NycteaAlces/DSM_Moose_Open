@@ -95,15 +95,13 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     DistanceInput2 <- unique(DistanceInput2)
 
 
-    #model1 <- ddf(method="ds", data=DistanceInput2, dsmodel = ~cds(key="hn"), meta.data=list(width=425))
-   # ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = input$truncation)
     ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = list(left=0, right=truncvalue()))
+    plot(ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",truncvalue()))
+    # MOOS QQ-plot ----
 
-
-
-
-     plot(ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",truncvalue()))
-
+    output$MOOS_QQ <- renderPlot({
+      ddf.gof(ddf.1.moos$ddf)
+    })
    })
 
 
@@ -336,7 +334,10 @@ GetShapefile <- function(InShapefile, OutShapefile){
     ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
     plot(ddf.1.mude, main=("Global detection function for mule deer, HN-Cos, no truncation"))
-        
+      # MUDE QQ-plots ----
+    output$MUDE_QQ <- renderPlot({
+      ddf.gof(ddf.1.mude$ddf)
+    })      
         
         })
  
@@ -659,7 +660,10 @@ GetShapefile <- function(InShapefile, OutShapefile){
     ddf.1.wtde <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
 
     plot(ddf.1.wtde, main=("Global detection function for white-tailed deer, HN-Cos, no truncation"))
-        
+     # WTDE QQ-plots ----
+    output$WTDE_QQ <- renderPlot({
+      ddf.gof(ddf.1.wtde$ddf)
+    })
         
         })
 
@@ -716,7 +720,10 @@ head(datasheet.2)
         head(DistanceInput2)
         ddf.1.wapt <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
         plot(ddf.1.wapt, main=("Global detection function for elk, HN-Cos, no truncation"))             
-                
+        # WAPT QQ-plots ----
+        output$WAPT_QQ <- renderPlot({
+          ddf.gof(ddf.1.wapt$ddf)
+        })
         })
  
 #####################################################################
