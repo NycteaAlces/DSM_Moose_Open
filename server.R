@@ -518,10 +518,25 @@ GetShapefile <- function(InShapefile, OutShapefile){
     DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.WTDE$ID), Region.Label= DistancePreInput.WTDE$Stratum,Area = as.numeric(DistancePreInput.WTDE$Stratum.Area), TID = as.numeric(DistancePreInput.WTDE$Transect.ID), TLENGTH = as.numeric(DistancePreInput.WTDE$Transect.Length), Effort=as.numeric(DistancePreInput.WTDE$Length)/1000, distance= as.numeric(DistancePreInput.WTDE$DistancePerp), size=as.numeric(DistancePreInput.WTDE$WTDE.GroupSize),CC=as.factor(DistancePreInput.WTDE$Covariate.1), Activity=as.factor(DistancePreInput.WTDE$Covariate.2)))
 
     DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
-
-
-    close(myconn)
-
+   trans.flown <- sqlFetch(myconn, "transects_flown")
+    trans.all <- sqlFetch(myconn, "transects")
+    close(myconn)    
+    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
+  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+  #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
+    f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
+    trans.flown.vertices <- rbind(x.coords,y.coords)
+    
+  l <- vector("list", nrow(from.coords))
+  library(sp)
+  for (i in seq_along(l)){
+    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
+    }
+   trans.flown.splat <- SpatialLines(l)
+   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+    
+    
 
 GetShapefile <- function(InShapefile, OutShapefile){
     if (is.null(InShapefile)) 
@@ -754,9 +769,25 @@ head(datasheet.2)
 
     DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
 
-
-    close(myconn)
-
+   trans.flown <- sqlFetch(myconn, "transects_flown")
+    trans.all <- sqlFetch(myconn, "transects")
+    close(myconn)    
+    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
+  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+  #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
+    f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
+    trans.flown.vertices <- rbind(x.coords,y.coords)
+    
+  l <- vector("list", nrow(from.coords))
+  library(sp)
+  for (i in seq_along(l)){
+    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
+    }
+   trans.flown.splat <- SpatialLines(l)
+   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+    
+    
 
     GetShapefile <- function(InShapefile, OutShapefile){
         if (is.null(InShapefile)) 
