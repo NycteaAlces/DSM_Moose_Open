@@ -175,7 +175,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   for (i in seq_along(l)){
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
-   trans.flown.spat <- SpatialLines(l)
+   trans.flown.splat <- SpatialLines(l)
  trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
     
     
