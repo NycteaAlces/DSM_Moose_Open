@@ -166,7 +166,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    trans.flown.vertices <- rbind(x.coords,y.coords)
+
     
   l <- vector("list", nrow(from.coords))
   library(sp)
@@ -298,7 +298,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    trans.flown.vertices <- rbind(x.coords,y.coords)
+  
     
   l <- vector("list", nrow(from.coords))
   library(sp)
@@ -314,7 +314,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    trans.flown.vertices <- rbind(x.coords,y.coords)
+    
     
   l <- vector("list", nrow(from.coords))
   library(sp)
@@ -398,7 +398,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    trans.flown.vertices <- rbind(x.coords,y.coords)
+    
     
   l <- vector("list", nrow(from.coords))
   library(sp)
@@ -527,7 +527,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    trans.flown.vertices <- rbind(x.coords,y.coords)
+  
     
   l <- vector("list", nrow(from.coords))
   library(sp)
@@ -784,7 +784,7 @@ head(datasheet.2)
   #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
     f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
     t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
-    trans.flown.vertices <- rbind(x.coords,y.coords)
+  
     
   l <- vector("list", nrow(from.coords))
   library(sp)
