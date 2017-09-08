@@ -1,6 +1,6 @@
 
 
-#install and load required packages
+#install and load required packages -----------------
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg))
@@ -176,7 +176,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
    trans.flown.splat <- SpatialLines(l)
- trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
     
     
 
@@ -292,10 +292,40 @@ GetShapefile <- function(InShapefile, OutShapefile){
     DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.MUDE$ID), Region.Label= DistancePreInput.MUDE$Stratum,Area = as.numeric(DistancePreInput.MUDE$Stratum.Area), TID = as.numeric(DistancePreInput.MUDE$Transect.ID), TLENGTH = as.numeric(DistancePreInput.MUDE$Transect.Length), Effort=as.numeric(DistancePreInput.MUDE$Length)/1000, distance= as.numeric(DistancePreInput.MUDE$DistancePerp), size=as.numeric(DistancePreInput.MUDE$MUDE.GroupSize),CC=as.factor(DistancePreInput.MUDE$Covariate.1), Activity=as.factor(DistancePreInput.MUDE$Covariate.2)))
 
     DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
-
-
-    close(myconn)
+    trans.flown <- sqlFetch(myconn, "transects_flown")
+    trans.all <- sqlFetch(myconn, "transects")
+    close(myconn)    
+    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
+  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+  #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
+    f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
+    trans.flown.vertices <- rbind(x.coords,y.coords)
     
+  l <- vector("list", nrow(from.coords))
+  library(sp)
+  for (i in seq_along(l)){
+    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
+    }
+   trans.flown.splat <- SpatialLines(l)
+   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+    
+    
+    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
+  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+  #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
+    f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
+    trans.flown.vertices <- rbind(x.coords,y.coords)
+    
+  l <- vector("list", nrow(from.coords))
+  library(sp)
+  for (i in seq_along(l)){
+    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
+    }
+   trans.flown.splat <- SpatialLines(l)
+   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+
 
     DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.MUDE$ID), Region.Label= DistancePreInput.MUDE$Stratum,Area = as.numeric(DistancePreInput.MUDE$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.MUDE$Transect.ID), Effort = as.numeric(DistancePreInput.MUDE$Transect.Length), distance= as.numeric(DistancePreInput.MUDE$DistancePerp), size=as.numeric(DistancePreInput.MUDE$MUDE.GroupSize),CC=as.factor(DistancePreInput.MUDE$Covariate.1), Activity=as.factor(DistancePreInput.MUDE$Covariate.2)))
 
@@ -359,9 +389,25 @@ GetShapefile <- function(InShapefile, OutShapefile){
     DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.MUDE$ID), Region.Label= DistancePreInput.MUDE$Stratum,Area = as.numeric(DistancePreInput.MUDE$Stratum.Area), TID = as.numeric(DistancePreInput.MUDE$Transect.ID), TLENGTH = as.numeric(DistancePreInput.MUDE$Transect.Length), Effort=as.numeric(DistancePreInput.MUDE$Length)/1000, distance= as.numeric(DistancePreInput.MUDE$DistancePerp), size=as.numeric(DistancePreInput.MUDE$MUDE.GroupSize),CC=as.factor(DistancePreInput.MUDE$Covariate.1), Activity=as.factor(DistancePreInput.MUDE$Covariate.2)))
 
     DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
-
-
-    close(myconn)
+   trans.flown <- sqlFetch(myconn, "transects_flown")
+    trans.all <- sqlFetch(myconn, "transects")
+    close(myconn)    
+    trans.flown <- merge(trans.all, trans.flown, by.x="UniqueID", by.y = "Transect ID")
+  from.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+  #  to.coords <- as.data.frame(cbind(TID =trans.flown$UniqueID,X =trans.flown$TO_X, "y"=trans.flown$TO_Y))
+    f <- as.data.frame(cbind(X =trans.flown$FROM_X, "y"=trans.flown$FROM_Y))
+    t <- as.data.frame(cbind(X =trans.flown$TO_X, "y"=trans.flown$TO_Y))   
+    trans.flown.vertices <- rbind(x.coords,y.coords)
+    
+  l <- vector("list", nrow(from.coords))
+  library(sp)
+  for (i in seq_along(l)){
+    l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
+    }
+   trans.flown.splat <- SpatialLines(l)
+   trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+    
+    
 
 
 GetShapefile <- function(InShapefile, OutShapefile){
@@ -412,7 +458,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     p <- ggplot ()
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-
+    p <- p + geom_path(aes(x=long,y=lat,group=group), data = trans.flown.splat.df, colour = "gray" )
     #p <- p + geom_line(aes(x=long,y=lat,group=group), data = survey.transects359.TTM, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
@@ -525,7 +571,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
     p <- ggplot ()
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-
+    p <- p + geom_path(aes(x=long,y=lat,group=group), data = trans.flown.splat.df, colour = "gray" )
     #p <- p + geom_line(aes(x=long,y=lat,group=group), data = survey.transects359.TTM, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
@@ -760,7 +806,7 @@ head(datasheet.2)
     p <- ggplot ()
     p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
     #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-
+    p <- p + geom_path(aes(x=long,y=lat,group=group), data = trans.flown.splat.df, colour = "gray" )
     #p <- p + geom_line(aes(x=long,y=lat,group=group), data = survey.transects359.TTM, colour = "gray" )
     p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
