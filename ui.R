@@ -12,14 +12,18 @@ shinyUI(pageWithSidebar(
                ),
   mainPanel(
      tabsetPanel(
-      tabPanel("Moose", plotOutput("myplot"),
-                       plotOutput("myplot2")),
-       tabPanel("Mule Deer", plotOutput("myplot3"),
-                             plotOutput("MUDE_MAP")),
-       tabPanel("White-tailed Deer", plotOutput("WTDE_DF"),
-                                     plotOutput("WTDE_MAP")),
-        tabPanel("Elk", plotOutput("WAPT_DF"),
-                        plotOutput("WAPT_MAP"))
+       tabPanel("Moose", plotOutput("myplot2"),
+                     plotOutput("MOOS_QQ"),
+                     plotOutput("myplot")),
+            tabPanel("Mule Deer", plotOutput("MUDE_MAP"),
+                     plotOutput("myplot3"),
+                     plotOutput("MUDE_QQ")),
+            tabPanel("White-tailed Deer", plotOutput("WTDE_MAP"),
+                     plotOutput("WTDE_DF"),
+                     plotOutput("WTDE_QQ")),
+            tabPanel("Elk", plotOutput("WAPT_MAP"),
+                     plotOutput("WAPT_DF"),
+                     plotOutput("WAPT_QQ"))
 
   ))
 ))
