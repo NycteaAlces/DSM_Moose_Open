@@ -24,7 +24,7 @@ shinyUI(pageWithSidebar(
             tabPanel("Elk", plotOutput("WAPT_MAP"),
                      plotOutput("WAPT_DF"),
                      plotOutput("WAPT_QQ")),
-            tabPanel("Power analysis", plotoutput("MOOS_BS"))
+            tabPanel("Power analysis", plotOutput("MOOS_BS"))
 
   ))
 ))
