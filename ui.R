@@ -23,7 +23,8 @@ shinyUI(pageWithSidebar(
                      plotOutput("WTDE_QQ")),
             tabPanel("Elk", plotOutput("WAPT_MAP"),
                      plotOutput("WAPT_DF"),
-                     plotOutput("WAPT_QQ"))
+                     plotOutput("WAPT_QQ")),
+            tabPanel("Power analysis", plotoutput("MOOS_BS"))
 
   ))
 ))
