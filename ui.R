@@ -12,8 +12,8 @@ shinyUI(pageWithSidebar(
                ),
   mainPanel(
      tabsetPanel(
-       tabPanel("Moose", plotOutput("myplot2"),
-                     plotOutput("MOOS_QQ"),
+       tabPanel("Moose",textOutput("MOOS_TXT"), plotOutput("myplot2"),
+                     plotOutput("MOOS_QQ"), 
                      plotOutput("myplot")),
             tabPanel("Mule Deer", plotOutput("MUDE_MAP"),
                      plotOutput("myplot3"),
