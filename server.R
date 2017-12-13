@@ -413,20 +413,15 @@ GetShapefile <- function(InShapefile, OutShapefile){
     ddf.1.mude <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = 425)
     plot(ddf.1.mude, main=("Global detection function for mule deer, HN-Cos, no truncation"))
       # MUDE QQ-plots ----
-    output$MUDE_QQ <- renderPlot({
-      ddf.gof(ddf.1.mude$ddf)
-    })      
+    output$MUDE_QQ <- renderPlot({ ddf.gof(ddf.1.mude$ddf) })      
         
         })
  
 #####################################################################
 #MUDE Map
 #####################################################################   
-    
-    
-    output$MUDE_MAP <- renderPlot({
-   
-      inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
+output$MUDE_MAP <- renderPlot({
+    inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
     if (is.null(inFile))
       return(NULL)
     DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
