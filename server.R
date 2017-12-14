@@ -138,7 +138,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   output$myplot <- renderPlot({plot(OL()$ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",425))})
   output$MOOS_QQ = renderPlot({ddf.gof(OL()$ddf.1.moos$ddf)})
   output$MOOS_TAB = DT::renderDataTable(OL()$model_result_df, options = list(lengthChange=FALSE))
-  output$MOOS_TXT = renderText({paste("The survey included", round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1],1), "km of transects (n= ", nrow(OL()$transflown), " mean transect length = ",                  #---------------
+  output$MOOS_TXT = renderText({paste("This is a quick and dirty anlaysis to assess the observed detection function for issues and to provide a quick assessment of density estimates for each species. The tool will be developed, if useful, to include other components of analysis options. The survey included", round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1],1), "km of transects (n= ", nrow(OL()$transflown), " mean transect length = ",                  #---------------
                                       round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),"km) that were sampled across a total of ", OL()$strat_num,
                                       "strata. There were an estimated ", round(OL()$ddf.1.moos$dht$individuals$N$Estimate[1]*1000, 0),
                                       " moose  (CV = ", round(OL()$ddf.1.moos$dht$individuals$N$cv[1], 2)," Confidence interval = ",
