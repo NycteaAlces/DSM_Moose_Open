@@ -9,7 +9,7 @@ ipak <- function(pkg){
 # usage
 packages <- c("shiny", "RODBC","dplyr","Distance",
   "mrds", "ggplot2", "rgdal",
-  "rgeos","dsm","knitr","maptools","gridExtra")
+  "rgeos","dsm","knitr","maptools","gridExtra","sp")
 
 ipak(packages)
 
@@ -172,7 +172,6 @@ truncvalue <- reactive(as.double(input$truncation[1]))
 
     
   l <- vector("list", nrow(from.coords))
-  library(sp)
   for (i in seq_along(l)){
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
@@ -371,7 +370,6 @@ output$MUDE_MAP <- renderPlot({
     
     
   l <- vector("list", nrow(from.coords))
-  library(sp)
   for (i in seq_along(l)){
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
@@ -500,7 +498,6 @@ GetShapefile <- function(InShapefile, OutShapefile){
   
     
   l <- vector("list", nrow(from.coords))
-  library(sp)
   for (i in seq_along(l)){
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
@@ -755,7 +752,6 @@ GetShapefile <- function(InShapefile, OutShapefile){
   
     
   l <- vector("list", nrow(from.coords))
-  library(sp)
   for (i in seq_along(l)){
     l[[i]] <- Lines(list(Line(rbind(f[i, ], t[i, ]))), as.character(i))
     }
