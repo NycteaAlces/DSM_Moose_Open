@@ -32,7 +32,128 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   output$debug <- renderPrint({
     sessionInfo()
   })
-  
+  OL <- eventReactive(input$MegaDB$datapath, { ####----
+  # input$file1 will be NULL initially. After the user selects and uploads a
+  # file, it will be a data frame with 'name', 'size', 'type', and 'datapath'
+  # columns. The 'datapath' column will contain the local filenames where the
+  # data can be found.
+
+  inFile <- input$MegaDB$datapath  #User input -- Get the Access database pathname
+
+  if (is.null(inFile))
+    return(NULL)
+
+  DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
+  myconn <- odbcDriverConnect(DB)
+  strat <- sqlFetch(myconn, "strata")
+  strat_num <- nrow(strat)
+  results_num_index <- as.integer(strat_num) + 1
+
+  datasheet <- as.data.frame(sqlQuery(myconn, "select * from datasheet"))
+
+  names(datasheet) <- sub(" ", ".", names(datasheet))
+  names(datasheet) <- sub(" ", ".", names(datasheet))
+  names(datasheet) <- sub("/", "", names(datasheet))
+  names(datasheet) <- sub("/", "", names(datasheet))
+
+
+
+  transflown <- datasheet[!duplicated(datasheet[, c("Transect.ID", "Stratum")]), ]
+  transflown <- transflown[!is.na(transflown$Stratum),]
+  transflown$DistancePerp <- " "
+  transflown$MOOS.GroupSize <- " "
+  transflown$Covariate.1 <- " "
+  transflown$Covariate.2 <- " "
+  transflown <- unique(transflown)
+
+
+  datasheet.2 <- datasheet[ which(datasheet$MOOS.GroupSize >0),]
+  datasheet.2 <- unique(datasheet.2)
+
+
+  DistancePreInput.MOOS.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
+  DistancePreInput.MOOS.2 <- unique(DistancePreInput.MOOS.2)
+
+
+  DistancePreInput.MOOS <- merge(datasheet.2, DistancePreInput.MOOS.2, all=T)
+  DistancePreInput.MOOS <- unique(DistancePreInput.MOOS)
+
+
+  DistanceInput<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.MOOS$ID), Region.Label= DistancePreInput.MOOS$Stratum,Area = as.numeric(DistancePreInput.MOOS$Stratum.Area), TID = as.numeric(DistancePreInput.MOOS$Transect.ID), TLENGTH = as.numeric(DistancePreInput.MOOS$Transect.Length), Effort=as.numeric(DistancePreInput.MOOS$Length)/1000, distance= as.numeric(DistancePreInput.MOOS$DistancePerp), size=as.numeric(DistancePreInput.MOOS$MOOS.GroupSize),CC=as.factor(DistancePreInput.MOOS$Covariate.1), Activity=as.factor(DistancePreInput.MOOS$Covariate.2)))
+
+  DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
+
+
+  close(myconn)
+
+  DistanceInput2 <- as.data.frame(cbind(object = as.numeric(DistancePreInput.MOOS$ID), Region.Label= DistancePreInput.MOOS$Stratum,Area = as.numeric(DistancePreInput.MOOS$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.MOOS$Transect.ID), Effort = as.numeric(DistancePreInput.MOOS$Transect.Length), distance= as.numeric(DistancePreInput.MOOS$DistancePerp), size=as.numeric(DistancePreInput.MOOS$MOOS.GroupSize),CC=as.factor(DistancePreInput.MOOS$Covariate.1), Activity=as.factor(DistancePreInput.MOOS$Covariate.2)))
+
+  DistanceInput2 <- unique(DistanceInput2)
+  Calf_n <-  sum(datasheet$MOOS.Calf)
+  Cow_n <- sum(datasheet$MOOS.Cow)
+  Calf_ratio <- Calf_n / Cow_n
+  Bull_n <- sum(sum(datasheet$MOOS.Bull.N), sum(datasheet$MOOS.Bull.S), sum(datasheet$MOOS.Bull.M), sum(datasheet$MOOS.Bull.L))
+  Bull_n
+  Bull_ratio <- Bull_n / Cow_n
+  MOOS_n <- sum(datasheet$MOOS.Cow, datasheet$MOOS.Calf, datasheet$MOOS.Bull.NA, datasheet$MOOS.Bull.S, datasheet$MOOS.Bull.M, datasheet$MOOS.Bull.L, datasheet$MOOS.UC, datasheet$MOOS.UC.Adult)
+  WTD_n  <- sum(datasheet$WTDE.Doe,  datasheet$WTDE.Fawn, datasheet$WTDE.Buck.NA, datasheet$WTDE.Buck.S, datasheet$WTDE.Buck.M, datasheet$WTDE.Buck.L, datasheet$WTDE.UC, datasheet$WTDE.UC.Adult)
+  MUDE_n <- sum(datasheet$MUDE.Doe,  datasheet$MUDE.Fawn, datasheet$MUDE.Buck.NA, datasheet$MUDE.Buck.S, datasheet$MUDE.Buck.M, datasheet$MUDE.Buck.L, datasheet$MUDE.UC, datasheet$MUDE.UC.Adult)
+  WAPT_n <-  sum(datasheet$WAPT.Cow, datasheet$WAPT.Calf, datasheet$WAPT.Bull.NA, datasheet$WAPT.Bull.S, datasheet$WAPT.Bull.M, datasheet$WAPT.Bull.L, datasheet$WAPT.UC, datasheet$WAPT.UC.Adult)
+  WAPT_n <-  sum(is.numeric(datasheet$WAPT.Cow), is.numeric( datasheet$WAPT.Calf), is.numeric( datasheet$WAPT.Bull.NA), is.numeric( datasheet$WAPT.Bull.S), is.numeric( datasheet$WAPT.Bull.M), is.numeric( datasheet$WAPT.Bull.L), is.numeric( datasheet$WAPT.UC), is.numeric( datasheet$WAPT.UC.Adult))
+  k <- 425
+
+
+  moos.hn_cos_2 <- ds(DistanceInput2, truncation = k, key="hn", adjustment = "cos", order = 2)
+  moos.hn_cos_3 <- ds(DistanceInput2, truncation = k, key="hn", adjustment = "cos", order = 3)
+  moos.hn_cos  <- ds(DistanceInput2, truncation = k, key="hn", adjustment = "cos")
+  moos.hn_herm <- ds(DistanceInput2, truncation = k, key="hn", adjustment = "herm")
+  moos.hr_herm <- ds(DistanceInput2, truncation = k, key="hr", adjustment = "herm")
+  moos.hr_cos  <- ds(DistanceInput2, truncation = k, key="hr", adjustment = "cos")
+  moos.hr_poly  <- ds(DistanceInput2, truncation = k, key="hr", adjustment = "poly")
+  moos.unif_cos <- ds(DistanceInput2, truncation = k, key="unif", adjustment = "cos")
+
+  mlist <- list(moos.hn_cos, moos.hn_herm, moos.hr_herm, moos.hr_cos, moos.hr_poly, moos.unif_cos)
+  modelnum <- length(mlist)
+  model_results <- list()
+
+  for (i in 1:modelnum) {
+    Vector <- numeric(9)
+    Vector[1] <- mlist[[i]]$ddf$dsmodel[2]
+    Vector[2] <- as.numeric(round(mlist[[i]]$ddf$criterion,2))
+    Vector[3] <- as.numeric(round(mlist[[i]]$dht$individuals$N$Estimate[results_num_index]*1000,0))
+    Vector[4] <- as.numeric(round(mlist[[i]]$dht$individuals$N$cv[results_num_index],3))
+    Vector[5] <- as.numeric(round(mlist[[i]]$dht$individuals$N$lcl[results_num_index]*1000,0))
+    Vector[6] <- as.numeric(round(mlist[[i]]$dht$individuals$N$ucl[results_num_index]*1000,0))
+    Vector[7] <- as.numeric(round(mlist[[i]]$dht$individuals$D$Estimate[results_num_index]*1000,2))
+    Vector[8] <- as.numeric(round(mlist[[i]]$dht$individuals$D$lcl[results_num_index]*1000,2))
+    Vector[9] <- as.numeric(round(mlist[[i]]$dht$individuals$D$ucl[results_num_index]*1000,2))
+    model_results[[i]] <- Vector
+  }
+  model_result_df <- do.call("rbind", model_results)
+  colnames(model_result_df) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl" )
+  ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = list(left=0, right=truncvalue()))
+  list(ddf.1.moos = ddf.1.moos, model_result_df = model_result_df, Calf_n = Calf_n, Cow_n = Cow_n, datasheet=datasheet, transflown = transflown, strat_num=strat_num, MOOS_n=MOOS_n,Calf_ratio=Calf_ratio, Bull_ratio=Bull_ratio, Bull_n=Bull_n, WTD_n=WTD_n, MUDE_n=MUDE_n,WAPT_n=WAPT_n )
+  })
+
+  output$myplot <- renderPlot({plot(OL()$ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",425))})
+  output$MOOS_QQ = renderPlot({ddf.gof(OL()$ddf.1.moos$ddf)})
+  output$MOOS_TAB = DT::renderDataTable(OL()$model_result_df, options = list(lengthChange=FALSE))
+  output$MOOS_TXT = renderText({paste("The survey included", round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1],1), "km of transects (n= ", nrow(OL()$transflown), " mean transect length = ",                  #---------------
+                                      round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),"km) that were sampled across a total of ", OL()$strat_num,
+                                      "strata. There were an estimated ", round(OL()$ddf.1.moos$dht$individuals$N$Estimate[1]*1000, 0),
+                                      " moose  (CV = ", round(OL()$ddf.1.moos$dht$individuals$N$cv[1], 2)," Confidence interval = ",
+                                      round(OL()$ddf.1.moos$dht$individuals$N$lcl[1]*1000, 0)," - ", round(OL()$ddf.1.moos$dht$individuals$N$ucl[1]*1000, 0),
+                                      ") within the study area. In total, ", OL()$MOOS_n," moose were observed in ",  OL()$ddf.1.moos$dht$clusters$summary$n[1],
+                                      " groups during the survey (sampling fraction = ", round(OL()$MOOS_n/(OL()$ddf.1.moos$dht$individuals$N$Estimate[1]*1000)*100,1),
+                                      "%). The unadjusted  observed calf ratio and bull ratio (i.e. not corrected for effort between strata) were ", round(OL()$Calf_ratio, 2), " and ",
+                                      round(OL()$Bull_ratio, 2), " , respectively. Of the bulls observed, ", round((sum(OL()$datasheet$MOOS.Bull.N)/OL()$Bull_n)*100,1),
+                                      "% had already shed their antlers. Of those bulls still with antlers, ",
+                                      round((sum(OL()$datasheet$MOOS.Bull.S)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were small,",
+                                      round((sum(OL()$datasheet$MOOS.Bull.M)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were medium, and ",
+                                      round((sum(OL()$datasheet$MOOS.Bull.L)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were large. In addition to moose, ",
+                                      OL()$WTD_n, " White-tailed deer, ", OL()$MUDE_n, " Mule Deer, and ", OL()$WAPT_n," elk were observed during the survey. The observed sample sizes for these species were not deemed sufficient to provide a reliable estimate of abundance.")})
+
+
  
 
   output$myplot <- renderPlot({
