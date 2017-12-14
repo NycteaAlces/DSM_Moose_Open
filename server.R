@@ -9,7 +9,7 @@ ipak <- function(pkg){
 # usage
 packages <- c("shiny", "RODBC","dplyr","Distance",
   "mrds", "ggplot2", "rgdal",
-  "rgeos","dsm","knitr","maptools","gridExtra","sp")
+  "rgeos","dsm","knitr","maptools","gridExtra","sp", "DT")
 
 ipak(packages)
 
