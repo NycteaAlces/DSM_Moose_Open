@@ -1,5 +1,3 @@
-
-
 #install and load required packages -----------------
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
@@ -36,111 +34,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   })
   
   
-bootstrap <- function(DistanceInput2, S){  #---- Function to resample distance data (by transect strip) to develop a bootstrapped dataset based on cumulative effort. Useful for power analysis
 
-        #Set up analysis
-        #Number of unique transects in dataset
-        
-        #!!!! get number of rows from list()$transflown
-        N <- nrow(transflown)
-        
-        #Number of samples to draw for each iteration (Bootstrap number)
-        #! MAke a variable <- 10
-        #S <- 2
-        
-        DistanceInput2$Region.Label <- strat$`Stratum Name`[1] #In the instance of stratification, replace with 1 stratum
-        DistanceInput2$Area <- sum(strat$`Stratum Area`)  #recalculate the area with the area of all strata
-        #! Replace code to account for strata and minimum sample sizes to calculate density by strata, then collapse strata
-        
-        
-        cvsummary <- data.frame(Iteration=integer(),                   #Create dataframe with relevant fields
-                                Sample=integer(),
-                                Region=integer(),
-                                Area_Skm=numeric(),
-                                Area_Cover=numeric(),
-                                Transects=integer(),
-                                Effort=numeric(),
-                                ObsNum=numeric(),
-                                Pop_est=numeric(),
-                                Pop_se=numeric(),
-                                Pop_cv=numeric(),
-                                Pop_lcl=numeric(),
-                                Pop_ucl=numeric(),
-                                Pop_df=numeric(),
-                                D_Est=numeric(),
-                                D_se=numeric(),
-                                D_cv=numeric(),
-                                D_lcl=numeric(),
-                                D_ucl=numeric(),
-                                D_df=numeric(),
-                                EncRate=numeric(),
-                                EncRateSE=numeric(),
-                                EncRateCV=numeric(),
-                                DetP=numeric(),
-                                DetP_SE=numeric(),
-                                DetP_CV=numeric(),
-                                ExpectedCS=numeric(),
-                                ECS_SE=numeric())
-        
-        cvsummary_colnames <- names(cvsummary)
-        
-        
-        for(i in 20:N) {
-        
-        
-          for(j in 1:S) {
-        
-            SubsetTable <- DistanceInput2[sample(1:nrow(DistanceInput2),i, replace=FALSE),]
-        
-            ds.model<-ds(SubsetTable, truncation = 425, monotonicity = FALSE,quiet=TRUE)
-        
-            results <- summary(ds.model)
-        
-        
-        
-            D_Stats <- data.frame(results$dht$clusters[4])
-            A_Stats <-data.frame(results$dht$clusters[2])
-            N_Stats <- data.frame(results$dht$clusters[3])
-        
-        
-            Iteration <-   i
-            Sample <-      j
-            Region <-      1
-            Area_Skm <-   (A_Stats[2])[1,1]
-            Area_Cover <- (A_Stats[3])[1,1]
-            Transects <-  (A_Stats[6])[1,1]
-            Effort <-     (A_Stats[4])[1,1]
-            ObsNum <-     (A_Stats[5])[1,1]
-            Pop_est <-    (N_Stats[2])[1,1]
-            Pop_se <-     (N_Stats[3])[1,1]
-            Pop_cv <-     (N_Stats[4])[1,1]
-            Pop_lcl <-    (N_Stats[5])[1,1]
-            Pop_ucl <-    (N_Stats[6])[1,1]
-            P_df <-       (N_Stats[7])[1,1]
-            D_est <-      (D_Stats[2])[1,1]
-            D_se <-       (D_Stats[3])[1,1]
-            D_cv <-       (D_Stats[4])[1,1]
-            D_lcl <-      (D_Stats[5])[1,1]
-            D_ucl <-      (D_Stats[6])[1,1]
-            D_df <-       (D_Stats[7])[1,1]
-            EncRate <-    (A_Stats[7])[1,1]
-            EncRateSE <-  (A_Stats[8])[1,1]
-            EncRateCV <-  (A_Stats[9])[1,1]
-            DetP <-       summary(ds.model)$ds$average.p[1]
-            DetP_SE <-    summary(ds.model)$ds$average.p.se[1]
-            DetP_CV <-    (DetP_SE/DetP)
-            ExpectedCS <- summary(ds.model)$dht[3]$Expected.S$Expected.S[1]
-            ECS_SE <-     summary(ds.model)$dht[3]$Expected.S$se.Expected.S[1]
-        
-            cvsummary <- rbind(c(Iteration,Sample,Region,Area_Skm,Area_Cover,Transects,Effort,ObsNum,Pop_est,Pop_se,Pop_cv,Pop_lcl,Pop_ucl,P_df,D_est,D_se,D_cv,D_lcl,D_ucl,D_df,EncRate,EncRateSE,EncRateCV,DetP,DetP_SE,DetP_CV,ExpectedCS,ECS_SE),cvsummary)
-        
-            names(cvsummary) <- cvsummary_colnames
-        
-            #cat("The survey resulted in an estimate of ",Pop_est,"moose at a density of ",D_est,"moose per square kilometre, with a CV of", Pop_cv, ".")
-        
-          }}
-}
-     
 
   output$myplot <- renderPlot({
 
@@ -220,7 +114,7 @@ bootstrap <- function(DistanceInput2, S){  #---- Function to resample distance d
 
   output$myplot2 <- renderPlot({
     
-      inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
+    inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
      # print(inFile)
     if (is.null(inFile))
       return(NULL)
