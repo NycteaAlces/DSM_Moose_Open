@@ -136,7 +136,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
             #cat("The survey resulted in an estimate of ",Pop_est,"moose at a density of ",D_est,"moose per square kilometre, with a CV of", Pop_cv, ".")
         
           }}
-}}
+}
      
 
 
@@ -924,3 +924,4 @@ GetShapefile <- function(InShapefile, OutShapefile){
     
     
     })
+}
