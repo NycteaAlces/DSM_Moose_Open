@@ -171,8 +171,8 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     ########Sticky note
     #####
     ###
-    #DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)};Port= DBQ=",inFile)
-    DB <- paste("Driver=FreeTDS;Port=<port>; DBQ=",inFile)
+    DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)};Port=1433; DBQ=",inFile)
+    #DB <- paste("Driver=FreeTDS;Port=<port>; DBQ=",inFile)
     myconn <- odbcDriverConnect(DB)
     strat <- sqlFetch(myconn, "strata")
     strat_num <- nrow(strat)
