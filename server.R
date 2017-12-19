@@ -129,7 +129,7 @@ truncvalue <- reactive(as.double(input$truncation[1]))
     Vector[9] <- as.numeric(round(mlist[[i]]$dht$individuals$D$ucl[results_num_index]*1000,2))
     model_results[[i]] <- Vector
   }
-  model_result_df <- do.call("rbind", model_results)
+  model_result_df <- as.data.frame(do.call("rbind", model_results))
   colnames(model_result_df) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl" )
   ddf.1.moos <- ds(DistanceInput2, key="hn", adjustment = "cos", truncation = list(left=0, right=truncvalue()))
   list(ddf.1.moos = ddf.1.moos, model_result_df = model_result_df, Calf_n = Calf_n, Cow_n = Cow_n, datasheet=datasheet, transflown = transflown, strat_num=strat_num, MOOS_n=MOOS_n,Calf_ratio=Calf_ratio, Bull_ratio=Bull_ratio, Bull_n=Bull_n, WTD_n=WTD_n, MUDE_n=MUDE_n,WAPT_n=WAPT_n )
