@@ -370,7 +370,7 @@ GetShapefile <- function(InShapefile, OutShapefile){
   output$MOOS_TXT = renderText({paste("The survey included", round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1],1), "km of transects (n= ", nrow(OL()$transflown), " mean transect length = ",                
                                       round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),"km) that were sampled across a total of ", OL()$strat_num,
                             #          "strata. There were an estimated ", round(OL()$ddf.1.moos$dht$individuals$N$Estimate[OL()$strat_num]*1000, 0),
-                             #         "strata. There were an estimated ", round(sum(OL()$#ddf.1.moos$dht$individuals$N$Estimate)*1000, 0),
+                                      "strata. There were an estimated ", round(sum(OL()$#ddf.1.moos$dht$individuals$N$Estimate)*1000, 0),
                               #        "strata. There were an estimated ", round(OL()$model_result_df[1]$Nhat #ddf.1.moos$dht$individuals$N$Estimate[OL()$strat_num + 1]*1000, 0),
                                       " moose  (CV = ", round(OL()$ddf.1.moos$dht$individuals$N$cv[1], 2)," Confidence interval = ",
                                       round(OL()$ddf.1.moos$dht$individuals$N$lcl[1]*1000, 0)," - ", round(OL()$ddf.1.moos$dht$individuals$N$ucl[1]*1000, 0),
