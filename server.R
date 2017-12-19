@@ -119,14 +119,14 @@ truncvalue <- reactive(as.double(input$truncation[1]))
   for (i in 1:modelnum) {
     Vector <- numeric(9)
     Vector[1] <- mlist[[i]]$ddf$dsmodel[2]
-    Vector[2] <- as.numeric(round(mlist[[i]]$ddf$criterion,2))
-    Vector[3] <- as.numeric(round(mlist[[i]]$dht$individuals$N$Estimate[results_num_index]*1000,0))
-    Vector[4] <- as.numeric(round(mlist[[i]]$dht$individuals$N$cv[results_num_index],3))
-    Vector[5] <- as.numeric(round(mlist[[i]]$dht$individuals$N$lcl[results_num_index]*1000,0))
-    Vector[6] <- as.numeric(round(mlist[[i]]$dht$individuals$N$ucl[results_num_index]*1000,0))
-    Vector[7] <- as.numeric(round(mlist[[i]]$dht$individuals$D$Estimate[results_num_index]*1000,2))
-    Vector[8] <- as.numeric(round(mlist[[i]]$dht$individuals$D$lcl[results_num_index]*1000,2))
-    Vector[9] <- as.numeric(round(mlist[[i]]$dht$individuals$D$ucl[results_num_index]*1000,2))
+      Vector[2] <- as.vector(as.numeric(round(mlist[[i]]$ddf$criterion,2)))
+      Vector[3] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$Estimate[results_num_index]*1000,0)))
+      Vector[4] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$cv[results_num_index],3)))
+      Vector[5] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$lcl[results_num_index]*1000,0)))
+      Vector[6] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$ucl[results_num_index]*1000,0)))
+      Vector[7] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$D$Estimate[results_num_index]*1000,2)))
+      Vector[8] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$D$lcl[results_num_index]*1000,2)))
+      Vector[9] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$D$ucl[results_num_index]*1000,2)))
     model_results[[i]] <- Vector
   }
   model_result_df <- as.data.frame(do.call("rbind", model_results))
