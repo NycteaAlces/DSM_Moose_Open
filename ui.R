@@ -23,7 +23,7 @@ shinyUI(pageWithSidebar(
   mainPanel(
      tabsetPanel(
        tabPanel("Moose",textOutput("MOOS_TXT"), DT::dataTableOutput('MOOS_TAB'), plotOutput("myplot2"),
-                     plotOutput("MOOS_QQ"), plotOutput("myplot"), plotOutput("AIRCRAFT_QQ"),
+                     plotOutput("MOOS_QQ"), plotOutput("myplot")),
             tabPanel("Mule Deer", plotOutput("MUDE_MAP"),
                      plotOutput("myplot3"),
                      plotOutput("MUDE_QQ")),
