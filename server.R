@@ -33,6 +33,17 @@ shinyServer(function(input, output,session) {#----
     return(plot_output_list)
   }
 
+  #Function to clean up model descriptions in summary tables
+  fun.getModDescr <- function(model_description) {
+    x<-model_description
+    key = substr(x, as.integer((gregexpr("key = \"", x)[[1]][1]))+7, as.integer(regexpr("\", form", x)[[1]][1])-1) #get key name
+    adj = substr(x, as.integer((gregexpr("adj.series = \"", x)[[1]][1]))+14, as.integer(regexpr("\", adj.order", x)[[1]][1])-1) #get adjustement term
+    adj.ord = substr(x, as.integer((gregexpr("adj.order = ", x)[[1]][1]))+12, as.integer(regexpr(", adj.scale = \"" , x)[[1]][1])-1) #get adjustment order
+    modeldesc_2 <- gsub(" ", "", paste(key, "(", adj, ") - {",adj.ord,"}"), fixed=TRUE) #Make pretty words
+    return(as.vector(modeldesc_2))
+  }
+
+
   OL <- eventReactive(list(input$MegaDB$datapath, input$truncation), { ####----
 
     # input$file1 will be NULL initially. After the user selects and uploads a
@@ -49,11 +60,20 @@ shinyServer(function(input, output,session) {#----
     DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
     myconn <- odbcDriverConnect(DB)
     strat <- sqlFetch(myconn, "strata")
-    strat_num <- nrow(strat)
-    results_num_index <- as.integer(strat_num) + 1
+
 
     datasheet <- as.data.frame(sqlQuery(myconn, "select * from datasheet"))
     close(myconn)
+    strat_num <- nrow(strat)
+    if(strat_num==1){
+      results_num_index <- as.integer(strat_num)
+    } else {
+
+      results_num_index <- as.integer(strat_num) + 1
+    }
+
+
+
     names(datasheet) <- sub(" ", ".", names(datasheet))
     names(datasheet) <- sub(" ", ".", names(datasheet))
     names(datasheet) <- sub("/", "", names(datasheet))
@@ -126,7 +146,6 @@ shinyServer(function(input, output,session) {#----
     DistanceInput2.HORS <- unique(DistanceInput2.HORS)
     print(head(DistanceInput2.HORS))
     print(head(DistanceInput2.WAPT))
-      #  ddf.1.mude <- ds(DistanceInput2.MD, key="hn", adjustment = "cos", truncation = list(left=0, right=truncvalue()))
 
     #Create aircraft dataset for aircraft-specific plotting
     Copy.df <- DistancePreInput.MOOS
@@ -139,75 +158,49 @@ shinyServer(function(input, output,session) {#----
     CleanHistData["object"] <- seq.int(nrow(CleanHistData))
     U.list <- split(CleanHistData, CleanHistData$Aircraft)
 
-
-    Copy.df.md <- DistancePreInput.MUDE
-    Copy.df.md$DistancePerp <- as.numeric(Copy.df.md$DistancePerp)
-    Copy.df.md$MUDE.GroupSize <- as.numeric(Copy.df.md$MUDE.GroupSize)
-    CleanHistData.MD <- Copy.df.md[!(Copy.df.md$DistancePerp==""),]
-    CleanHistData.MD <- Copy.df.md[!is.na(Copy.df.md$DistancePerp),]
-    CleanHistData.MD <- subset(CleanHistData.MD, DistancePerp <= 600)
-    CleanHistData.MD["distance"] <- CleanHistData.MD$DistancePerp
-    CleanHistData.MD["object"] <- seq.int(nrow(CleanHistData.MD))
-    U.list.MD <- split(CleanHistData.MD, CleanHistData.MD$Aircraft)
-
-    Copy.df.wt <- DistancePreInput.WTDE
-    Copy.df.wt$DistancePerp <- as.numeric(Copy.df.wt$DistancePerp)
-    Copy.df.wt$WTDE.GroupSize <- as.numeric(Copy.df.wt$WTDE.GroupSize)
-    CleanHistData.WT <- Copy.df.wt[!(Copy.df.wt$DistancePerp==""),]
-    CleanHistData.WT <- Copy.df.wt[!is.na(Copy.df.wt$DistancePerp),]
-    CleanHistData.WT <- subset(CleanHistData.WT, DistancePerp <= 600)
-    CleanHistData.WT["distance"] <- CleanHistData.WT$DistancePerp
-    CleanHistData.WT["object"] <- seq.int(nrow(CleanHistData.WT))
-    U.list.WT <- split(CleanHistData.WT, CleanHistData.WT$Aircraft)
-
-    Copy.df.wapt <- DistancePreInput.WAPT
-    Copy.df.wapt$DistancePerp <- as.numeric(Copy.df.wapt$DistancePerp)
-    Copy.df.wapt$WAPT.GroupSize <- as.numeric(Copy.df.wapt$WAPT.GroupSize)
-    CleanHistData.WAPT <- Copy.df.wapt[!(Copy.df.wapt$DistancePerp==""),]
-    CleanHistData.WAPT <- Copy.df.wapt[!is.na(Copy.df.wapt$DistancePerp),]
-    CleanHistData.WAPT <- subset(CleanHistData.WAPT, DistancePerp <= 600)
-    CleanHistData.WAPT["distance"] <- CleanHistData.WAPT$DistancePerp
-    CleanHistData.WAPT["object"] <- seq.int(nrow(CleanHistData.WAPT))
-    U.list.WAPT <- split(CleanHistData.WAPT, CleanHistData.WAPT$Aircraft)
-
-
-
-
-
-    Calf_n <-  sum(datasheet$MOOS.Calf)
-    Cow_n <- sum(datasheet$MOOS.Cow)
+    Calf_n <- sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Calf)
+    Cow_n  <- sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Cow)
     Calf_ratio <- Calf_n / Cow_n
-    Bull_n <- sum(sum(datasheet$MOOS.Bull.N), sum(datasheet$MOOS.Bull.S), sum(datasheet$MOOS.Bull.M), sum(datasheet$MOOS.Bull.L))
+    Bull_n <- sum(sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.N), sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.S), sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.M), sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.L))
     Bull_ratio <- Bull_n / Cow_n
-    MOOS_n <- sum(datasheet$MOOS.Cow, datasheet$MOOS.Calf, datasheet$MOOS.Bull.NA, datasheet$MOOS.Bull.S, datasheet$MOOS.Bull.M, datasheet$MOOS.Bull.L, datasheet$MOOS.UC, datasheet$MOOS.UC.Adult)
-    WTD_n  <- sum(datasheet$WTDE.Doe,  datasheet$WTDE.Fawn, datasheet$WTDE.Buck.NA, datasheet$WTDE.Buck.S, datasheet$WTDE.Buck.M, datasheet$WTDE.Buck.L, datasheet$WTDE.UC, datasheet$WTDE.UC.Adult)
-    MUDE_n <- sum(datasheet$MUDE.Doe,  datasheet$MUDE.Fawn, datasheet$MUDE.Buck.NA, datasheet$MUDE.Buck.S, datasheet$MUDE.Buck.M, datasheet$MUDE.Buck.L, datasheet$MUDE.UC, datasheet$MUDE.UC.Adult)
-    WAPT_n <-  sum(datasheet$WAPT.Cow, datasheet$WAPT.Calf, datasheet$WAPT.Bull.NA, datasheet$WAPT.Bull.S, datasheet$WAPT.Bull.M, datasheet$WAPT.Bull.L, datasheet$WAPT.UC, datasheet$WAPT.UC.Adult)
-    WAPT_n <-  sum(is.numeric(datasheet$WAPT.Cow), is.numeric( datasheet$WAPT.Calf), is.numeric( datasheet$WAPT.Bull.NA), is.numeric( datasheet$WAPT.Bull.S), is.numeric( datasheet$WAPT.Bull.M), is.numeric( datasheet$WAPT.Bull.L), is.numeric( datasheet$WAPT.UC), is.numeric( datasheet$WAPT.UC.Adult))
-    HORS_n <- sum(datasheet$HORS.GroupSize)
+    MOOS_n <- sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.GroupSize)
+    WTD_n  <- sum(datasheet[!is.na(datasheet$WTDE.GroupSize),]$WTDE.GroupSize)
+    MUDE_n <- sum(datasheet[!is.na(datasheet$MUDE.GroupSize),]$MUDE.GroupSize)
+    WAPT_n <- sum(datasheet[!is.na(datasheet$WAPT.GroupSize),]$WAPT.GroupSize)
+    HORS_n <- sum(datasheet[!is.na(datasheet$HORS.GroupSize),]$HORS.GroupSize)
+
+print(paste("MOOS ~ Calf_n =", Calf_n, ", Cows=",Cow_n,", Bulls=", Bull_n, ", Calf  ratio= ", Calf_ratio, ", Bull ratio=",Bull_ratio) )
+print(paste("Moose Total=", MOOS_n))
+print(paste("WTDE Total=", WTD_n))
+print(paste("MUDE Total=", MUDE_n))
+print(paste("WAPT Total=", WAPT_n))
+print(paste("HORS Total=", HORS_n))
 
     moos.hn_cos_2 <- NULL
     moos.hn_cos_3 <- NULL
-    moos.hn_cos  <- NULL
-    moos.hn_herm <- NULL
-    moos.hr_herm <- NULL
-    moos.hr_cos  <- NULL
+    moos.hn_cos   <- NULL
+    moos.hn_herm  <- NULL
+    moos.hr_herm  <- NULL
+    moos.hr_cos   <- NULL
     moos.hr_poly  <- NULL
     moos.unif_cos <- NULL
-    moos.hn_cos_2 <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos", order = 2)
-    moos.hn_cos_3 <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos", order = 3)
-    moos.hn_cos  <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos")
-    moos.hn_herm <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "herm")
-    moos.hr_herm <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "herm")
-    moos.hr_cos  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "cos")
+  #  moos.hn_cos_2 <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos", order = 2)
+  #  moos.hn_cos_3 <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos", order = 3)
+    moos.hn_cos   <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos")
+    moos.hn_herm  <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "herm")
+    moos.hr_herm  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "herm")
+    moos.hr_cos   <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "cos")
     moos.hr_poly  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "poly")
     moos.unif_cos <- ds(DistanceInput2, truncation = truncvalue(), key="unif", adjustment = "cos")
-    mlist <- list(moos.hn_cos, moos.hr_cos, moos.hr_poly, moos.unif_cos,  moos.hn_cos_2,  moos.hn_cos_3, moos.hn_herm,  moos.hr_herm)
+   # mlist <- list(moos.hn_cos, moos.hr_cos, moos.hr_poly, moos.unif_cos,  moos.hn_cos_2,  moos.hn_cos_3, moos.hn_herm,  moos.hr_herm)
+    mlist <- list(moos.hn_cos, moos.hr_cos, moos.hr_poly, moos.unif_cos,  moos.hn_herm,  moos.hr_herm)
+
+
     modelnum <- length(mlist)
     model_results <- list()
     for (i in 1:modelnum) { #return results for each candidate moose model such that they can simply be accessed for reporting in global env
       Vector <- numeric(9) #create vector
-      Vector[1] <- mlist[[i]]$ddf$dsmodel[2] #model description (placeholder for more appropriate model names)
+      Vector[1] <- fun.getModDescr(as.character(mlist[[i]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
       Vector[2] <- as.vector(as.numeric(round(mlist[[i]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -216,10 +209,12 @@ shinyServer(function(input, output,session) {#----
       Vector[7] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$D$Estimate[results_num_index]*1000,2))) #Density estimate for the study area (all strata)
       Vector[8] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
-      model_results[[i]] <- Vector
+      Vector[10] <- mlist[[i]]$ddf$dsmodel[2]
+       model_results[[i]] <- Vector
     }
     model_result_df <- as.data.frame(do.call("rbind", model_results))
-    colnames(model_result_df) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl")
+    print(model_result_df)
+    colnames(model_result_df) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl","Full model description")
     best.moos <- model_result_df[which.min(model_result_df$AIC),]
 
     ddf.1.moos<-ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos")
@@ -249,18 +244,19 @@ shinyServer(function(input, output,session) {#----
          HORS_n=HORS_n,
          strat=strat,
          U.list=U.list,
-         U.list.MD=U.list.MD,
-         U.list.WT=U.list.WT,
-         U.list.WAPT=U.list.WAPT,
-         DistancePreInput.HORS=DistancePreInput.HORS)
+         DistancePreInput.WTDE=DistancePreInput.WTDE,
+         DistancePreInput.MUDE=DistancePreInput.MUDE,
+         DistancePreInput.HORS=DistancePreInput.HORS,
+         DistancePreInput.WAPT=DistancePreInput.WAPT)
   }, ignoreNULL = FALSE)#######!!!!!!!!!!!!!!!
 
   OL.MD   <- eventReactive(OL(), {
-
-    Calf_n.MD <-  sum(OL()$datasheet$MUDE.Fawn)
-    Cow_n.MD <- sum(OL()$datasheet$MUDE.Doe)
+    print(paste("MULE DEER OL()$DISTANCEINPUT2"))
+    print(OL()$DistanceInput2.MD)
+    Calf_n.MD <-  sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$MUDE.Fawn)
+    Cow_n.MD <- sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$MUDE.Doe)
     Calf_ratio.MD <- Calf_n.MD / Cow_n.MD
-    Bull_n.MD <- sum(sum(OL()$datasheet$MUDE.Buck.NA), sum(OL()$datasheet$MUDE.Buck.S), sum(OL()$datasheet$MUDE.Buck.M), sum(OL()$datasheet$MUDE.Buck.L))
+    Bull_n.MD <- sum(sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$MUDE.Buck.NA), sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$datasheet$MUDE.Buck.S), sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$MUDE.Buck.M), sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$MUDE.Buck.L))
     Bull_ratio.MD <- Bull_n.MD / Cow_n.MD
     #Create null objects to avoid erros when adding empty (non-converging) models to mdlist
     mude.hn_cos  <- NULL
@@ -276,14 +272,15 @@ shinyServer(function(input, output,session) {#----
     mude.hr_cos   <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hr", adjustment = "cos")
     mude.hr_poly  <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hr", adjustment = "poly")
     mude.unif_cos <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="unif", adjustment = "cos")
-    results_num_index <- as.integer(OL()$strat_num) + 1
+    results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(mude.hn_cos,mude.hn_herm, mude.hr_herm, mude.hr_cos, mude.hr_poly, mude.unif_cos)
     modelnum.md <- length(mdlist)
     model_results.md <- list()
+
     for (j in 1:modelnum.md) {
       if(is.null(mdlist[[j]])){next}
       Vector <- numeric(9) #create vector
-      Vector[1] <- mdlist[[j]]$ddf$dsmodel[2] #model description (placeholder for more appropriate model names)
+      Vector[1] <- fun.getModDescr(as.character(mdlist[[i]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
       Vector[2] <- as.vector(as.numeric(round(mdlist[[j]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -292,21 +289,32 @@ shinyServer(function(input, output,session) {#----
       Vector[7] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$Estimate[results_num_index]*1000,2))) #Density estimate for the study area (all strata)
       Vector[8] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
-      model_results.md[[j]] <- Vector
+      Vector[10] <- mdlist[[i]]$ddf$dsmodel[2]
+       model_results.md[[j]] <- Vector
     }
 
     model_result_df.MUDE <- as.data.frame(do.call("rbind", model_results.md))
-    colnames(model_result_df.MUDE) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl")
+    colnames(model_result_df.MUDE) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl","Full model description")
     best.mude <- model_result_df.MUDE[which.min(model_result_df.MUDE$AIC),]
  #   ddf.1.mude<-ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hn", adjustment = "cos")
-    list(model_result_df.MUDE=model_result_df.MUDE, ddf.1.mude=mude.hn_cos, best.mude = best.mude, results_num_index=results_num_index, Calf_ratio.MD=Calf_ratio.MD, Bull_ratio.MD=Bull_ratio.MD, Bull_n.MD=Bull_n.MD)
+    Copy.df.md <- OL()$DistancePreInput.MUDE
+    Copy.df.md$DistancePerp <- as.numeric(Copy.df.md$DistancePerp)
+    Copy.df.md$MUDE.GroupSize <- as.numeric(Copy.df.md$MUDE.GroupSize)
+    CleanHistData.MD <- Copy.df.md[!(Copy.df.md$DistancePerp==""),]
+    CleanHistData.MD <- Copy.df.md[!is.na(Copy.df.md$DistancePerp),]
+    CleanHistData.MD <- subset(CleanHistData.MD, DistancePerp <= 600)
+    CleanHistData.MD["distance"] <- CleanHistData.MD$DistancePerp
+    CleanHistData.MD["object"] <- seq.int(nrow(CleanHistData.MD))
+    U.list.MD <- split(CleanHistData.MD, CleanHistData.MD$Aircraft)
+
+      list(model_result_df.MUDE=model_result_df.MUDE, ddf.1.mude=mude.hn_cos, best.mude = best.mude, U.list.MD=U.list.MD, Calf_ratio.MD=Calf_ratio.MD, Bull_ratio.MD=Bull_ratio.MD, Bull_n.MD=Bull_n.MD)
   })
   OL.WT   <- eventReactive(OL(), {
 
-    Calf_n.WT <-  sum(OL()$datasheet$WTDE.Fawn)
-    Cow_n.WT <- sum(OL()$datasheet$WTDE.Doe)
+    Calf_n.WT<-  sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Fawn)
+    Cow_n.WT <- sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Doe)
     Calf_ratio.WT <- Calf_n.WT / Cow_n.WT
-    Bull_n.WT <- sum(sum(OL()$datasheet$WTDE.Buck.NA), sum(OL()$datasheet$WTDE.Buck.S), sum(OL()$datasheet$WTDE.Buck.M), sum(OL()$datasheet$WTDE.Buck.L))
+    Bull_n.WT <- sum(sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Buck.NA), sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$datasheet$WTDE.Buck.S), sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Buck.M), sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Buck.L))
     Bull_ratio.WT <- Bull_n.WT / Cow_n.WT
     #Create null objects to avoid erros when adding empty (non-converging) models to mdlist
     WTDE.hn_cos  <- NULL
@@ -322,7 +330,7 @@ shinyServer(function(input, output,session) {#----
     WTDE.hr_cos   <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "cos")
     WTDE.hr_poly  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "poly")
     WTDE.unif_cos <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="unif", adjustment = "cos")
-    results_num_index <- as.integer(OL()$strat_num) + 1
+    results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(WTDE.hn_cos,WTDE.hn_herm, WTDE.hr_herm, WTDE.hr_cos, WTDE.hr_poly, WTDE.unif_cos)
     modelnum.md <- length(mdlist)
     model_results.md <- list()
@@ -330,7 +338,7 @@ shinyServer(function(input, output,session) {#----
     for (j in 1:modelnum.md) {
       if(is.null(mdlist[[j]])){next}
       Vector <- numeric(9) #create vector
-      Vector[1] <- mdlist[[j]]$ddf$dsmodel[2] #model description (placeholder for more appropriate model names)
+      Vector[1] <- fun.getModDescr(as.character(mdlist[[j]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
       Vector[2] <- as.vector(as.numeric(round(mdlist[[j]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -339,21 +347,38 @@ shinyServer(function(input, output,session) {#----
       Vector[7] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$Estimate[results_num_index]*1000,2))) #Density estimate for the study area (all strata)
       Vector[8] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
-      model_results.md[[j]] <- Vector
+      Vector[10] <- mdlist[[j]]$ddf$dsmodel[2]
+        model_results.md[[j]] <- Vector
     }
 
     model_result_df.MUDE <- as.data.frame(do.call("rbind", model_results.md))
-    colnames(model_result_df.MUDE) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl")
+    print(paste("MUDE table - all mods"))
+    print(model_result_df.MUDE)
+    colnames(model_result_df.MUDE) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl","Full model description")
     best.mude <- model_result_df.MUDE[which.min(model_result_df.MUDE$AIC),]
+    print(paste("best MUDE table"))
+    print(best.mude)
   #  ddf.1.mude<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
-    list(model_result_df.wtde=model_result_df.MUDE, ddf.1.wtde=WTDE.hn_cos, best.wtde = best.mude, results_num_index=results_num_index, Calf_ratio.WT=Calf_ratio.WT, Bull_ratio.WT=Bull_ratio.WT, Bull_n.WT=Bull_n.WT)
+    Copy.df.wt <- OL()$DistancePreInput.WTDE
+    Copy.df.wt$DistancePerp <- as.numeric(Copy.df.wt$DistancePerp)
+    Copy.df.wt$WTDE.GroupSize <- as.numeric(Copy.df.wt$WTDE.GroupSize)
+    CleanHistData.WT <- Copy.df.wt[!(Copy.df.wt$DistancePerp==""),]
+    CleanHistData.WT <- Copy.df.wt[!is.na(Copy.df.wt$DistancePerp),]
+    CleanHistData.WT <- subset(CleanHistData.WT, DistancePerp <= 600)
+    CleanHistData.WT["distance"] <- CleanHistData.WT$DistancePerp
+    CleanHistData.WT["object"] <- seq.int(nrow(CleanHistData.WT))
+    U.list.WT <- split(CleanHistData.WT, CleanHistData.WT$Aircraft)
+
+
+
+    list(model_result_df.wtde=model_result_df.MUDE, ddf.1.wtde=WTDE.hn_cos, best.wtde = best.mude, U.list.WT=U.list.WT,Calf_ratio.WT=Calf_ratio.WT, Bull_ratio.WT=Bull_ratio.WT, Bull_n.WT=Bull_n.WT)
   })
   OL.WAPT <- eventReactive(OL(), {
 
-    Calf_n.WAPT <-  sum(OL()$datasheet$WAPT.Calf)
-    Cow_n.WAPT <- sum(OL()$datasheet$WAPT.Cow)
+    Calf_n.WAPT <-  sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Calf)
+    Cow_n.WAPT <- sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Cow)
     Calf_ratio.WAPT <- Calf_n.WAPT / Cow_n.WAPT
-    Bull_n.WAPT <- sum(sum(OL()$datasheet$WAPT.Bull.NA), sum(OL()$datasheet$WAPT.Bull.S), sum(OL()$datasheet$WAPT.Bull.M), sum(OL()$datasheet$WAPT.Bull.L))
+    Bull_n.WAPT <- sum(sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Bull.NA), sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Bull.S), sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Bull.M), sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Bull.L))
     Bull_ratio.WAPT <- Bull_n.WAPT / Cow_n.WAPT
     #Create null objects to avoid erros when adding empty (non-converging) models to mdlist
     WAPT.hn_cos  <- NULL
@@ -374,15 +399,25 @@ shinyServer(function(input, output,session) {#----
     # WAPT.hr_cos   <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hr", adjustment = "cos")
     # WAPT.hr_poly  <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hr", adjustment = "poly")
     # WAPT.unif_cos <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="unif", adjustment = "cos")
-    results_num_index <- as.integer(OL()$strat_num) + 1
+    results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(WAPT.hn_cos,WAPT.hn_herm, WAPT.hr_herm, WAPT.hr_cos, WAPT.hr_poly, WAPT.unif_cos)
     modelnum.wapt <- length(mdlist)
     model_results.wapt <- list()
+    Copy.df.wapt <- OL()$DistancePreInput.WAPT
+    Copy.df.wapt$DistancePerp <- as.numeric(Copy.df.wapt$DistancePerp)
+    Copy.df.wapt$WAPT.GroupSize <- as.numeric(Copy.df.wapt$WAPT.GroupSize)
+    CleanHistData.WAPT <- Copy.df.wapt[!(Copy.df.wapt$DistancePerp==""),]
+    CleanHistData.WAPT <- Copy.df.wapt[!is.na(Copy.df.wapt$DistancePerp),]
+    CleanHistData.WAPT <- subset(CleanHistData.WAPT, DistancePerp <= 600)
+    CleanHistData.WAPT["distance"] <- CleanHistData.WAPT$DistancePerp
+    CleanHistData.WAPT["object"] <- seq.int(nrow(CleanHistData.WAPT))
+    U.list.WAPT <- split(CleanHistData.WAPT, CleanHistData.WAPT$Aircraft)
+
     j=0
     for (j in 1:modelnum.wapt) {
       if(is.null(mdlist[[j]])){next}
       Vector <- numeric(9) #create vector
-      Vector[1] <- mdlist[[j]]$ddf$dsmodel[2] #model description (placeholder for more appropriate model names)
+      Vector[1] <- fun.getModDescr(as.character(mdlist[[j]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
       Vector[2] <- as.vector(as.numeric(round(mdlist[[j]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -391,19 +426,20 @@ shinyServer(function(input, output,session) {#----
       Vector[7] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$Estimate[results_num_index]*1000,2))) #Density estimate for the study area (all strata)
       Vector[8] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
-      model_results.wapt[[j]] <- Vector
+      Vector[10] <- mdlist[[j]]$ddf$dsmodel[2]
+            model_results.wapt[[j]] <- Vector
     }
 
     model_result_df.WAPT <- as.data.frame(do.call("rbind", model_results.wapt))
     colnames(model_result_df.WAPT) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl")
     best.wapt <- model_result_df.WAPT[which.min(model_result_df.WAPT$AIC),]
     #  ddf.1.mude<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
-    list(model_result_df.wapt=model_result_df.WAPT, ddf.1.wapt=WAPT.hn_cos, best.wapt = best.wapt, results_num_index=results_num_index, Calf_ratio.WAPT=Calf_ratio.WAPT, Bull_ratio.WAPT=Bull_ratio.WAPT, Bull_n.WAPT=Bull_n.WAPT)
+    list(model_result_df.wapt=model_result_df.WAPT, ddf.1.wapt=WAPT.hn_cos, best.wapt = best.wapt, Calf_ratio.WAPT=Calf_ratio.WAPT, Bull_ratio.WAPT=Bull_ratio.WAPT, Bull_n.WAPT=Bull_n.WAPT, U.list.WAPT=U.list.WAPT)
   })
   OL.HORS <- eventReactive(OL(), {
 
-    Calf_n.HORS <-  sum(OL()$datasheet$HORS.Foal)
-    Cow_n.HORS <- sum(OL()$datasheet$HORS.Adult)
+    Calf_n.HORS <-  sum(OL()$datasheet[!is.na(OL()$datasheet$HORS.GroupSize),]$HORS.Foal)
+    Cow_n.HORS <- sum(OL()$datasheet[!is.na(OL()$datasheet$HORS.GroupSize),]$HORS.Adult)
     Calf_ratio.HORS <- Calf_n.HORS / Cow_n.HORS
    # Bull_n.HO <- sum(sum(OL()$datasheet$HORS.Buck.NA), sum(OL()$datasheet$HORS.Buck.S), sum(OL()$datasheet$HORS.Buck.M), sum(OL()$datasheet$HORS.Buck.L))
   # Bull_ratio.HO <- Bull_n.HO / Cow_n.HO
@@ -422,7 +458,7 @@ shinyServer(function(input, output,session) {#----
     HORS.hr_cos   <- ds(OL()$DistanceInput2.HORS, truncation = truncvalue(), key="hr", adjustment = "cos")
     HORS.hr_poly  <- ds(OL()$DistanceInput2.HORS, truncation = truncvalue(), key="hr", adjustment = "poly")
     HORS.unif_cos <- ds(OL()$DistanceInput2.HORS, truncation = truncvalue(), key="unif", adjustment = "cos")
-    results_num_index <- as.integer(OL()$strat_num) + 1
+    results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(HORS.hn_cos,HORS.hn_herm, HORS.hr_herm, HORS.hr_cos, HORS.hr_poly, HORS.unif_cos)
     modelnum.md <- length(mdlist)
     model_results.md <- list()
@@ -441,7 +477,7 @@ shinyServer(function(input, output,session) {#----
     for (j in 1:modelnum.md) {
       if(is.null(mdlist[[j]])){next}
       Vector <- numeric(9) #create vector
-      Vector[1] <- mdlist[[j]]$ddf$dsmodel[2] #model description (placeholder for more appropriate model names)
+      Vector[1] <- fun.getModDescr(as.character(mdlist[[j]]$ddf$dsmodel[2]))#model description (placeholder for more appropriate model names)
       Vector[2] <- as.vector(as.numeric(round(mdlist[[j]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -450,22 +486,19 @@ shinyServer(function(input, output,session) {#----
       Vector[7] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$Estimate[results_num_index]*1000,2))) #Density estimate for the study area (all strata)
       Vector[8] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
-      model_results.md[[j]] <- Vector
+      Vector[10] <- mdlist[[j]]$ddf$dsmodel[2]
+            model_results.md[[j]] <- Vector
     }
 
     model_result_df.MUDE <- as.data.frame(do.call("rbind", model_results.md))
-    colnames(model_result_df.MUDE) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl")
+    colnames(model_result_df.MUDE) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl", "Full model description")
     print(model_result_df.MUDE)
     best.mude <- model_result_df.MUDE[which.min(model_result_df.MUDE$AIC),]
     print(best.mude)
     #  ddf.1.mude<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
-    list(model_result_df.hors=model_result_df.MUDE, ddf.1.hors=HORS.hn_cos, best.hors = best.mude, results_num_index=results_num_index, Calf_ratio.HORS=Calf_ratio.HORS, U.list.HORS=U.list.HORS)
+    list(model_result_df.hors=model_result_df.MUDE, ddf.1.hors=HORS.hn_cos, best.hors = best.mude,  Calf_ratio.HORS=Calf_ratio.HORS, U.list.HORS=U.list.HORS)
   })
-
-  output$MOOS_DF <- renderPlot({ plot(OL()$ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",OL()$truncvalue[1]))})
-  output$MOOS_QQ <- renderPlot({ ddf.gof(OL()$ddf.1.moos$ddf) })
-  output$MOOS_TAB = DT::renderDataTable(OL()$model_result_df, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for moose. Truncation distance was ",OL()$ddf.1.moos$ddf$meta.data$width) )
-  output$MOOS_MAP <- renderPlot({
+  OL.MAP <- eventReactive(input$WMU_Shp, {
     inFile <- DB() #input$MegaDB$datapath  #User input -- Get the Access database pathname
     # print(inFile)
     if (is.null(inFile))
@@ -474,7 +507,7 @@ shinyServer(function(input, output,session) {#----
     myconn <- odbcDriverConnect(DB)
     strat <- sqlFetch(myconn, "strata")
     strat_num <- nrow(strat)
-   #!!!!!!!!!!!!!!!# results_num_index <- OL()$results_num_index
+    #!!!!!!!!!!!!!!!# results_num_index <- OL()$results_num_index
     datasheet <- as.data.frame(sqlQuery(myconn, "select * from datasheet"))
     names(datasheet) <- sub(" ", ".", names(datasheet))
     names(datasheet) <- sub(" ", ".", names(datasheet))
@@ -511,6 +544,9 @@ shinyServer(function(input, output,session) {#----
     }
     trans.flown.splat <- SpatialLines(l)
     trans.flown.splat.df <- SpatialLinesDataFrame(sl = trans.flown.splat,data = from.coords)
+    print("HEAD transflownsplatdf")
+    print(head(trans.flown.splat.df))
+
 
     GetShapefile <- function(InShapefile, OutShapefile){
       if (is.null(InShapefile))
@@ -538,32 +574,124 @@ shinyServer(function(input, output,session) {#----
       spdf.df$y <- spdf.df$lat
       geom_polygon(aes_string(x="x",y="y",fill=name, group="group"), data=spdf.df)
     }
+    m2 <- m1[!is.na(m1$GrpX),] #remove NAs from coordinates
+    coordinates(m2)=~GrpX+GrpY
+    proj4string(m2)<- CRS("+proj=tmerc +lat_0=0 +lon_0=-115 +k=0.9992 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs")
+    proj4string(survey.area359.TTM)<- CRS("+proj=tmerc +lat_0=0 +lon_0=-115 +k=0.9992 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs")
+    proj4string(trans.flown.splat.df)<- CRS("+proj=tmerc +lat_0=0 +lon_0=-115 +k=0.9992 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs")
+    wmu.shp <- spTransform(survey.area359.TTM, CRS("+proj=longlat +datum=WGS84"))
+    pt.shp <- spTransform(m2, CRS("+proj=longlat +datum=WGS84"))
+    transflown.shp <- spTransform(trans.flown.splat.df, CRS("+proj=longlat +datum=WGS84"))
+    pt.df <- cbind(coordinates(pt.shp), pt.shp$size)
+    pt.df <- pt.df[which(pt.shp$size>0),]
+    colnames(pt.df) <- c("GrpX","GrpY","size")
+    pt.shp.sp <- as(pt.shp, 'SpatialPoints')
+    #line.shp <-spTransform(survey.transects359.TTM, CRS("+proj=longlat +datum=WGS84"))
+    map <- ggmap::get_googlemap(center = c(lon=gCentroid(wmu.shp)$x, lat=gCentroid(wmu.shp)$y), maptype="hybrid",zoom=9, )#, markers =
+    proj4string(trans.flown.splat.df)<- CRS("+proj=tmerc +lat_0=0 +lon_0=-115 +k=0.9992 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs")
+    transflown.shp <- spTransform(trans.flown.splat.df, CRS("+proj=longlat +datum=WGS84"))
+    spat.list <- list(pt.shp, wmu.shp)
+    #get the extent of the transects to compare the extent of the other layers - goal is to get the maximum extent for zooming
+    minx <- extent(transflown.shp)[1]
+    maxx <- extent(transflown.shp)[2]
+    miny <- extent(transflown.shp)[3]
+    maxy <- extent(transflown.shp)[4]
 
-    p <- ggplot ()
-    p <- p + geom_polygon(data = survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
-    #p <- p + geom_polygon(data = survey.areanon355, fill="khaki", aes(x=long, y=lat, group=group)) + coord_equal()
-    p <- p + geom_path(aes(x=long,y=lat,group=group), data = trans.flown.splat.df, colour = "gray" )
-    p <- p + geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
-    p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
-    p <- p + geom_point(aes(x=))
-    plot(p)
+    #Get the maximum extents of the layers for zooming
+    for(i in 1:length(spat.list)){
+      if(extent(spat.list[[i]])[1] < minx) {minx <-extent(spat.list[[i]])[1] }
+      if(extent(spat.list[[i]])[2] > maxx) {maxx <-extent(spat.list[[i]])[2] }
+      if(extent(spat.list[[i]])[3] < miny) {miny <-extent(spat.list[[i]])[3] }
+      if(extent(spat.list[[i]])[4] > maxy) {maxy <-extent(spat.list[[i]])[4] }
+      extentofmap <- list(minx, maxx, miny, maxy)
+    }
+    #From: https://github.com/Robinlovelace/Creating-maps-in-R/blob/master/vignettes/download-raster.R
+    #Handler to convert get_googlemap to raster
+    # ggmap_rast <- function(map){
+    #   map_bbox <- attr(map, 'bb')
+    #   .extent <- extent(as.numeric(map_bbox[c(2,4,1,3)]))
+    #   my_map <- raster(.extent, nrow= nrow(map), ncol = ncol(map))
+    #   rgb_cols <- setNames(as.data.frame(t(col2rgb(map))), c('red','green','blue'))
+    #   red <- my_map
+    #   values(red) <- rgb_cols[['red']]
+    #   green <- my_map
+    #   values(green) <- rgb_cols[['green']]
+    #   blue <- my_map
+    #   values(blue) <- rgb_cols[['blue']]
+    #   stack(red,green,blue)
+    # }
+    #
+    # gmap.rast <- ggmap_rast(map=map) #convert googlemaps output to a raster format
+    # googbackgrnd <- raster::mask(gmap.rast, as(raster::extent(minx, maxx, miny, maxy),'SpatialPolygons' ))#clip raster with max extent
+    # googbackgrnd.df <- data.frame(rasterToPoints(googbackgrnd))
+    list(
+      map=map,
+      wmu.shp=wmu.shp,
+      transflown.shp = transflown.shp,
+      pt.df = pt.df,
+      survey.area359.TTM=survey.area359.TTM,
+      trans.flown.splat.df=trans.flown.splat.df,
+      m1=m1)
+
   })
-  output$MOOS_TXT = renderText({paste("The survey included", round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1],1), "km of transects (n= ", nrow(OL()$transflown), " mean transect length = ",
-                                      round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),"km) that were sampled across a total of ", OL()$strat_num,
-                                      "strata. There were an estimated ", round(OL()$ddf.1.moos$dht$individuals$N$Estimate[OL()$strat_num +1]*1000, 0),
-                                      #     "strata. There were an estimated ", round(sum(OL()$#ddf.1.moos$dht$individuals$N$Estimate)*1000, 0),
-                                      #        "strata. There were an estimated ", round(OL()$model_result_df[1]$Nhat #ddf.1.moos$dht$individuals$N$Estimate[OL()$strat_num + 1]*1000, 0),
-                                      " moose  (CV = ", round(OL()$ddf.1.moos$dht$individuals$N$cv[1], 2)," Confidence interval = ",
-                                      round(OL()$ddf.1.moos$dht$individuals$N$lcl[1]*1000, 0)," - ", round(OL()$ddf.1.moos$dht$individuals$N$ucl[1]*1000, 0),
-                                      ") within the study area. In total, ", OL()$MOOS_n," moose were observed in ",  OL()$ddf.1.moos$dht$clusters$summary$n[1],
-                                      " groups during the survey (sampling fraction = ", round(OL()$MOOS_n/(OL()$ddf.1.moos$dht$individuals$N$Estimate[1]*1000)*100,1),
-                                      "%). The unadjusted  observed calf ratio and bull ratio (i.e. not corrected for effort between strata) were ", round(OL()$Calf_ratio, 2), " and ",
-                                      round(OL()$Bull_ratio, 2), " , respectively. Of the bulls observed, ", round((sum(OL()$datasheet$MOOS.Bull.N)/OL()$Bull_n)*100,1),
-                                      "% had already shed their antlers. Of those bulls still with antlers, ",
-                                      round((sum(OL()$datasheet$MOOS.Bull.S)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were small,",
-                                      round((sum(OL()$datasheet$MOOS.Bull.M)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were medium, and ",
-                                      round((sum(OL()$datasheet$MOOS.Bull.L)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were large. In addition to moose, ",
-                                      OL()$WTD_n, " White-tailed deer, ", OL()$MUDE_n, " Mule Deer, and ", OL()$WAPT_n," elk were observed during the survey. ")
+  output$MOOS_DF <- renderPlot({ plot(OL()$ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",OL()$truncvalue[1]))})
+  output$MOOS_QQ <- renderPlot({ ddf.gof(OL()$ddf.1.moos$ddf) })
+  output$MOOS_TAB = DT::renderDataTable(OL()$model_result_df, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for moose. Truncation distance was ",OL()$ddf.1.moos$ddf$meta.data$width) )
+  output$MOOS_MAP <- renderPlot({
+
+ #   p <- ggplot(googbackgrnd.df)+geom_point(aes(x=x, y=y, col=rgb(layer.1/255, layer.2/255, layer.3/255))) + scale_color_identity()
+ #   p <- p + geom_polygon(data = wmu.shp, fill="light blue", aes(x=long, y=lat, group=group, alpha=0.5))
+ #  # p <- p + geom_path(aes(x=long,y=lat,group=group), data = trans.flown.splat, colour = "gray" )
+ #   p <- p + geom_path(aes(x=long,y=lat,group=group), data = transflown.shp, colour = "gray" )
+ #   # p <- p + geom_path(aes(x=long,y=lat,group=group), data = as.data.frame(trans.flown.splat.df), colour = "gray" )
+ #   # p <- p+    geom_line(aes(x=long,y=lat,group=group), data = line.shp, colour = "gray" )
+ #      #geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
+ #   p <- p + geom_point(data =as.data.frame(pt.df), aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) ) + coord_fixed(1.3)
+ # #  p <- p + geom_point(aes(x=))
+ #      plot(p)
+
+
+
+
+
+
+
+      ggmap(OL.MAP()$map, extent="panel", maprange=FALSE) +
+        geom_polygon(data = OL.MAP()$wmu.shp, fill="light blue", color="purple", aes(x=long, y=lat, group=group, alpha=0.1),size=0.7, alpha=0.1) +
+        geom_path(aes(x=long,y=lat,group=group), data = OL.MAP()$transflown.shp, colour = "yellow", alpha=0.8 )+
+        # p <- p + geom_path(aes(x=(coordinates(transflown.shp)[[1]][[1]][,1]),y=coordinates(transflown.shp)[[1]][[1]][,2],group=group), data = as.data.frame(transflown.shp), colour = "gray" )
+        #geom_line(aes(x=long,y=lat,group=group), data = line.shp, colour = "gray" ) +
+        #geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
+        geom_point(data =as.data.frame(OL.MAP()$pt.df), aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) ) + coord_fixed(1.3)
+
+
+  })
+  output$MOOS_MAP2 <- renderPlot({
+     p <- ggplot ()
+     p <- p + geom_polygon(data = OL.MAP()$survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
+     p <- p + geom_path(aes(x=long,y=lat,group=group), data = OL.MAP()$trans.flown.splat.df, colour = "gray" )
+     p <- p + geom_point(data = OL.MAP()$m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
+     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
+     p <- p + geom_point(aes(x=))
+     plot(p)
+  })
+  output$MOOS_TXT = renderText({
+    paste("The survey included", round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1],1), "km of transects (n= ", nrow(OL()$transflown), " mean transect length = ",
+                                round(OL()$ddf.1.moos$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),"km) that were sampled across a total of ", OL()$strat_num,
+                                "strata. There were an estimated ", round(OL()$ddf.1.moos$dht$individuals$N$Estimate[OL()$results_num_index]*1000, 0),
+                                #     "strata. There were an estimated ", round(sum(OL()$#ddf.1.moos$dht$individuals$N$Estimate)*1000, 0),
+                                #        "strata. There were an estimated ", round(OL()$model_result_df[1]$Nhat #ddf.1.moos$dht$individuals$N$Estimate[OL()$strat_num + 1]*1000, 0),
+                                " moose  (CV = ", round(OL()$ddf.1.moos$dht$individuals$N$cv[1], 2)," Confidence interval = ",
+                                round(OL()$ddf.1.moos$dht$individuals$N$lcl[1]*1000, 0)," - ", round(OL()$ddf.1.moos$dht$individuals$N$ucl[1]*1000, 0),
+                                ") within the study area. In total, ", OL()$MOOS_n," moose were observed in ",  OL()$ddf.1.moos$dht$clusters$summary$n[1],
+                                " groups during the survey (sampling fraction = ", round(OL()$MOOS_n/(OL()$ddf.1.moos$dht$individuals$N$Estimate[1]*1000)*100,1),
+                                "%). The unadjusted  observed calf ratio and bull ratio (i.e. not corrected for effort between strata) were ", round(OL()$Calf_ratio, 2), " and ",
+                                round(OL()$Bull_ratio, 2), " , respectively. Of the bulls observed, ", round((sum(OL()$datasheet$MOOS.Bull.N)/OL()$Bull_n)*100,1),
+                                "% had already shed their antlers. Of those bulls still with antlers, ",
+                                round((sum(OL()$datasheet$MOOS.Bull.S)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were small,",
+                                round((sum(OL()$datasheet$MOOS.Bull.M)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were medium, and ",
+                                round((sum(OL()$datasheet$MOOS.Bull.L)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were large. In addition to moose, ",
+                                OL()$WTD_n, " White-tailed deer, ", OL()$MUDE_n, " Mule Deer, and ", OL()$WAPT_n," elk were observed during the survey. ")
   })
   output$MOOS_TAB2 = DT::renderDataTable(OL()$ddf.1.moos$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
   output$MOOS_TAB1 = DT::renderDataTable(OL()$ddf.1.moos$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
@@ -683,7 +811,7 @@ shinyServer(function(input, output,session) {#----
           round(OL.MD()$ddf.1.mude$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),
           "km) that were sampled across a total of ", OL()$strat_num,
           "strata. There were an estimated ",
-          round(OL.MD()$ddf.1.mude$dht$individuals$N$Estimate[OL.MD()$results_num_index]*1000, 0),
+          round(OL.MD()$ddf.1.mude$dht$individuals$N$Estimate[OL()$results_num_index]*1000, 0),
           " mule deer  (CV = ",
           round(as.numeric(as.character(OL.MD()$best.mude$CV)), 2),
           " Confidence interval = ",
@@ -697,12 +825,11 @@ shinyServer(function(input, output,session) {#----
           "%). The unadjusted  observed fawn ratio and buck ratio (i.e. not corrected for effort between strata) were ",
           round(OL.MD()$Calf_ratio.MD, 2), " and ",
           round(OL.MD()$Bull_ratio.MD, 2), " , respectively. Of the bucks observed, ",
-          round((sum(OL()$datasheet$MUDE.Buck.NA)/OL()$Bull_n.MD)*100,1),
+          round((sum(OL()$datasheet$MUDE.Buck.NA)/OL.MD()$Bull_n.MD)*100,1),
           "% had already shed their antlers. Of those bulls still with antlers, ",
           round((sum(OL()$datasheet$MUDE.Bull.S)/(OL.MD()$Bull_n.MD - sum(OL()$datasheet$MUDE.Bull.NA)))*100,1), "% were small,",
           round((sum(OL()$datasheet$MUDE.Bull.M)/(OL.MD()$Bull_n.MD - sum(OL()$datasheet$MUDE.Bull.NA)))*100,1), "% were medium, and ",
-          round((sum(OL()$datasheet$MUDE.Bull.L)/(OL.MD()$Bull_n.MD - sum(OL()$datasheet$MUDE.Bull.NA)))*100,1), "% were large. In addition to mule deer, ",
-          OL()$WTD_n, " White-tailed deer, ", OL()$MOOS_n, " Mule Deer, and ", OL()$WAPT_n," elk were observed during the survey. ")
+          round((sum(OL()$datasheet$MUDE.Bull.L)/(OL.MD()$Bull_n.MD - sum(OL()$datasheet$MUDE.Bull.NA)))*100,1), "% were large.")
 
 
   })
@@ -721,7 +848,7 @@ shinyServer(function(input, output,session) {#----
            round(OL.WT()$ddf.1.wtde$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),
            "km) that were sampled across a total of ", OL()$strat_num,
            "strata. There were an estimated ",
-           round(OL.WT()$ddf.1.wtde$dht$individuals$N$Estimate[OL.WT()$results_num_index]*1000, 0),
+           round(OL.WT()$ddf.1.wtde$dht$individuals$N$Estimate[OL()$results_num_index]*1000, 0),
            " white-tailed deer  (CV = ",
            round(as.numeric(as.character(OL.WT()$best.wtde$CV)), 2),
            " Confidence interval = ",
@@ -735,7 +862,7 @@ shinyServer(function(input, output,session) {#----
            "%). The unadjusted  observed fawn ratio and buck ratio (i.e. not corrected for effort between strata) were ",
            round(OL.WT()$Calf_ratio.WT, 2), " and ",
            round(OL.WT()$Bull_ratio.WT, 2), " , respectively. Of the bucks observed, ",
-           round((sum(OL()$datasheet$WTDE.Buck.NA)/OL()$Bull_n.WT)*100,1),
+           round((sum(OL()$datasheet$WTDE.Buck.NA)/OL.WT()$Bull_n.WT)*100,1),
            "% had already shed their antlers. Of those bulls still with antlers, ",
            round((sum(OL()$datasheet$WTDE.Bull.S)/(OL.WT()$Bull_n.WT - sum(OL()$datasheet$WTDE.Bull.NA)))*100,1), "% were small,",
            round((sum(OL()$datasheet$WTDE.Bull.M)/(OL.WT()$Bull_n.WT - sum(OL()$datasheet$WTDE.Bull.NA)))*100,1), "% were medium, and ",
@@ -996,7 +1123,7 @@ shinyServer(function(input, output,session) {#----
           round(OL.WAPT()$ddf.1.wapt$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),
           "km) that were sampled across a total of ", OL()$strat_num,
           "strata. There were an estimated ",
-          round(OL.WAPT()$ddf.1.wapt$dht$individuals$N$Estimate[OL.WAPT()$results_num_index]*1000, 0),
+          round(OL.WAPT()$ddf.1.wapt$dht$individuals$N$Estimate[OL()$results_num_index]*1000, 0),
           " elk  (CV = ",
           round(as.numeric(as.character(OL.WAPT()$best.wapt$CV)), 2),
           " Confidence interval = ",
@@ -1020,7 +1147,7 @@ shinyServer(function(input, output,session) {#----
   output$WAPT_TAB = DT::renderDataTable(OL.WAPT()$model_result_df.wapt, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for elk. Truncation distance was ",OL()$truncvalue))
   output$WAPT_TAB2 = DT::renderDataTable(OL.WAPT()$ddf.1.wapt$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
   output$WAPT_TAB1 = DT::renderDataTable(OL.WAPT()$ddf.1.wapt$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
-  output$WAPT_AIRDF <- renderUI({ get_plot_output_list(OL()$U.list.WAPT) })
+  output$WAPT_AIRDF <- renderUI({ get_plot_output_list(OL.WAPT()$U.list.WAPT) })
 
 
   output$HORS_QQ <- renderPlot({ddf.gof(OL.HORS()$ddf.1.hors$ddf) })
@@ -1148,7 +1275,7 @@ shinyServer(function(input, output,session) {#----
           round(OL.HORS()$ddf.1.hors$dht$individuals$summary$Effort[1]/ nrow(OL()$transflown), 2),
           "km) that were sampled across a total of ", OL()$strat_num,
           "strata. There were an estimated ",
-          round(OL.HORS()$ddf.1.hors$dht$individuals$N$Estimate[OL.HORS()$results_num_index]*1000, 0),
+          round(OL.HORS()$ddf.1.hors$dht$individuals$N$Estimate[OL()$results_num_index]*1000, 0),
           " horses  (CV = ",
           round(as.numeric(as.character(OL.HORS()$best.hors$CV)), 2),
           " Confidence interval = ",

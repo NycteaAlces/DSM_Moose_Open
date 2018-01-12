@@ -8,8 +8,8 @@ ipak <- function(pkg){
 
 # usage
 packages <- c("shiny", "RODBC","dplyr","Distance","mrds", "ggplot2", "rgdal",
-              "rgeos","dsm","knitr","maptools","gridExtra","sp", "DT", "kableExtra",
-              "investr")
+              "rgeos","dsm","knitr","maptools","gridExtra","sp", "DT", "kableExtra", "ggmap",
+              "investr", "raster")
 ipak(packages)
 
 shinyUI(pageWithSidebar(
@@ -26,7 +26,7 @@ shinyUI(pageWithSidebar(
   ),
   mainPanel(
     tabsetPanel(id="inTabset",
-      tabPanel("Moose",id="Moose",textOutput("MOOS_TXT"), plotOutput("MOOS_MAP"), DT::dataTableOutput('MOOS_TAB'), DT::dataTableOutput("MOOS_TAB1"), plotOutput("MOOS_DF"),plotOutput("MOOS_QQ"), uiOutput("MOOS_AIRDF"), DT::dataTableOutput("MOOS_TAB2")),
+      tabPanel("Moose",id="Moose",textOutput("MOOS_TXT"), plotOutput("MOOS_MAP"), plotOutput("MOOS_MAP2"),DT::dataTableOutput('MOOS_TAB'), DT::dataTableOutput("MOOS_TAB1"), plotOutput("MOOS_DF"),plotOutput("MOOS_QQ"), uiOutput("MOOS_AIRDF"), DT::dataTableOutput("MOOS_TAB2")),
       tabPanel("Mule Deer", id="Mule Deer", textOutput("MUDE_TXT"), plotOutput("MUDE_MAP"), DT::dataTableOutput('MUDE_TAB'), DT::dataTableOutput("MUDE_TAB1"), plotOutput("MD_DF"),plotOutput("MUDE_QQ"), uiOutput("MUDE_AIRDF"), DT::dataTableOutput("MUDE_TAB2")),
       tabPanel("White-tailed Deer", id="White-tailed Deer", textOutput("WTDE_TXT"),  plotOutput("WTDE_MAP"), DT::dataTableOutput("WTDE_TAB"), DT::dataTableOutput("WTDE_TAB1"),plotOutput("WTDE_DF"), plotOutput("WTDE_QQ"), uiOutput("WTDE_AIRDF"), DT::dataTableOutput("WTDE_TAB2")),
       tabPanel("Elk", id="Elk", textOutput("WAPT_TXT"), plotOutput("WAPT_MAP"),DT::dataTableOutput("WAPT_TAB"), DT::dataTableOutput("WAPT_TAB1"),plotOutput("WAPT_DF"), plotOutput("WAPT_QQ"), uiOutput("WAPT_AIRDF"), DT::dataTableOutput("WAPT_TAB2")),#,DT::dataTableOutput("WAPT_TAB"), plotOutput("WAPT_DF"), plotOutput("WAPT_QQ")),
