@@ -35,6 +35,7 @@ shinyServer(function(input, output,session) {#----
 
   #Function to clean up model descriptions in summary tables
   fun.getModDescr <- function(model_description) {
+    print(paste("DEBUG-in fun.getModeDescr"))
     x<-model_description
     key = substr(x, as.integer((gregexpr("key = \"", x)[[1]][1]))+7, as.integer(regexpr("\", form", x)[[1]][1])-1) #get key name
     adj = substr(x, as.integer((gregexpr("adj.series = \"", x)[[1]][1]))+14, as.integer(regexpr("\", adj.order", x)[[1]][1])-1) #get adjustement term
@@ -43,6 +44,16 @@ shinyServer(function(input, output,session) {#----
     return(as.vector(modeldesc_2))
   }
 
+    fun.fixDest <- function(ddf.1.D) {
+      print(paste("DEBUG-in fun.fixDest"))
+      table <- as.data.frame(ddf.1.D)
+      table$Estimate <- table$Estimate * 1000
+      table$se<-table$se*1000
+      table$lcl<-table$lcl*1000
+      table$ucl<-table$ucl*1000
+      table <- round(table[,-1],3) #round everything except column 1
+      return(table)
+    }
 
   OL <- eventReactive(list(input$MegaDB$datapath, input$truncation), { ####----
 
@@ -164,17 +175,28 @@ shinyServer(function(input, output,session) {#----
     Bull_n <- sum(sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.N), sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.S), sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.M), sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.Bull.L))
     Bull_ratio <- Bull_n / Cow_n
     MOOS_n <- sum(datasheet[!is.na(datasheet$MOOS.GroupSize),]$MOOS.GroupSize)
+    MOOS_n2 <- sum(datasheet$MOOS.GroupSize)
     WTD_n  <- sum(datasheet[!is.na(datasheet$WTDE.GroupSize),]$WTDE.GroupSize)
+    WTD_n2 <- sum(datasheet$WTDE.GroupSize)
     MUDE_n <- sum(datasheet[!is.na(datasheet$MUDE.GroupSize),]$MUDE.GroupSize)
+    MD_n2 <- sum(datasheet$MUDE.GroupSize)
     WAPT_n <- sum(datasheet[!is.na(datasheet$WAPT.GroupSize),]$WAPT.GroupSize)
+    WAPT_n2 <- sum(datasheet$WAPT.GroupSize)
     HORS_n <- sum(datasheet[!is.na(datasheet$HORS.GroupSize),]$HORS.GroupSize)
 
-print(paste("MOOS ~ Calf_n =", Calf_n, ", Cows=",Cow_n,", Bulls=", Bull_n, ", Calf  ratio= ", Calf_ratio, ", Bull ratio=",Bull_ratio) )
-print(paste("Moose Total=", MOOS_n))
-print(paste("WTDE Total=", WTD_n))
-print(paste("MUDE Total=", MUDE_n))
-print(paste("WAPT Total=", WAPT_n))
-print(paste("HORS Total=", HORS_n))
+    print(paste("MOOS ~ Calf_n =", Calf_n, ", Cows=",Cow_n,", Bulls=", Bull_n, ", Calf  ratio= ", Calf_ratio, ", Bull ratio=",Bull_ratio) )
+    print(paste("Moose Total=", MOOS_n, "OR", MOOS_n2, "OR", sum(as.integer(as.character(DistancePreInput.MOOS$MOOS.GroupSize)))))
+    print(paste("WTDE Total=", WTD_n, "OR", WTD_n2, "OR", sum(as.integer(as.character(DistancePreInput.WTDE$WTDE.GroupSize)))))
+    print(paste("MUDE Total=", MUDE_n, "OR", MD_n2, "OR", sum(as.integer(as.character(DistancePreInput.MUDE$MUDE.GroupSize)))))
+    print(paste("WAPT Total=", WAPT_n, "OR", WAPT_n2, "OR", sum(as.integer(as.character(DistancePreInput.WAPT$WAPT.GroupSize)))))
+    print(paste("HORS Total=", HORS_n))
+
+    print("Distance2_Totals")
+    print(paste("Moose Total=", sum(DistanceInput2$size)))
+    print(paste("WTDE Total=", sum(DistanceInput2.WT$size)))
+    print(paste("MUDE Total=", sum(DistanceInput2.MD$size)))
+    print(paste("WAPT Total=", sum(DistanceInput2.WAPT$size)))
+    print(paste("HORS Total=", sum(DistanceInput2.HORS$size)))
 
     moos.hn_cos_2 <- NULL
     moos.hn_cos_3 <- NULL
@@ -251,6 +273,7 @@ print(paste("HORS Total=", HORS_n))
   }, ignoreNULL = FALSE)#######!!!!!!!!!!!!!!!
 
   OL.MD   <- eventReactive(OL(), {
+    print("I'm into mulies NOW")
     print(paste("MULE DEER OL()$DISTANCEINPUT2"))
     print(OL()$DistanceInput2.MD)
     Calf_n.MD <-  sum(OL()$datasheet[!is.na(OL()$datasheet$MUDE.GroupSize),]$MUDE.Fawn)
@@ -280,7 +303,7 @@ print(paste("HORS Total=", HORS_n))
     for (j in 1:modelnum.md) {
       if(is.null(mdlist[[j]])){next}
       Vector <- numeric(9) #create vector
-      Vector[1] <- fun.getModDescr(as.character(mdlist[[i]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
+      Vector[1] <- fun.getModDescr(as.character(mdlist[[j]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
       Vector[2] <- as.vector(as.numeric(round(mdlist[[j]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -289,7 +312,7 @@ print(paste("HORS Total=", HORS_n))
       Vector[7] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$Estimate[results_num_index]*1000,2))) #Density estimate for the study area (all strata)
       Vector[8] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
-      Vector[10] <- mdlist[[i]]$ddf$dsmodel[2]
+      Vector[10] <- mdlist[[j]]$ddf$dsmodel[2]
        model_results.md[[j]] <- Vector
     }
 
@@ -306,11 +329,13 @@ print(paste("HORS Total=", HORS_n))
     CleanHistData.MD["distance"] <- CleanHistData.MD$DistancePerp
     CleanHistData.MD["object"] <- seq.int(nrow(CleanHistData.MD))
     U.list.MD <- split(CleanHistData.MD, CleanHistData.MD$Aircraft)
-
+  print(paste("In MD line 321-before list"))
+  print(paste("Mule deer Ulist table:"))
+  print(U.list.MD)
       list(model_result_df.MUDE=model_result_df.MUDE, ddf.1.mude=mude.hn_cos, best.mude = best.mude, U.list.MD=U.list.MD, Calf_ratio.MD=Calf_ratio.MD, Bull_ratio.MD=Bull_ratio.MD, Bull_n.MD=Bull_n.MD)
   })
   OL.WT   <- eventReactive(OL(), {
-
+    print("I'm into wtd NOW")
     Calf_n.WT<-  sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Fawn)
     Cow_n.WT <- sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Doe)
     Calf_ratio.WT <- Calf_n.WT / Cow_n.WT
@@ -358,7 +383,7 @@ print(paste("HORS Total=", HORS_n))
     best.mude <- model_result_df.MUDE[which.min(model_result_df.MUDE$AIC),]
     print(paste("best MUDE table"))
     print(best.mude)
-  #  ddf.1.mude<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
+  #ddf.1.wtde<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
     Copy.df.wt <- OL()$DistancePreInput.WTDE
     Copy.df.wt$DistancePerp <- as.numeric(Copy.df.wt$DistancePerp)
     Copy.df.wt$WTDE.GroupSize <- as.numeric(Copy.df.wt$WTDE.GroupSize)
@@ -374,7 +399,7 @@ print(paste("HORS Total=", HORS_n))
     list(model_result_df.wtde=model_result_df.MUDE, ddf.1.wtde=WTDE.hn_cos, best.wtde = best.mude, U.list.WT=U.list.WT,Calf_ratio.WT=Calf_ratio.WT, Bull_ratio.WT=Bull_ratio.WT, Bull_n.WT=Bull_n.WT)
   })
   OL.WAPT <- eventReactive(OL(), {
-
+    print("I'm into elk NOW")
     Calf_n.WAPT <-  sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Calf)
     Cow_n.WAPT <- sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Cow)
     Calf_ratio.WAPT <- Calf_n.WAPT / Cow_n.WAPT
@@ -401,6 +426,7 @@ print(paste("HORS Total=", HORS_n))
     # WAPT.unif_cos <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="unif", adjustment = "cos")
     results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(WAPT.hn_cos,WAPT.hn_herm, WAPT.hr_herm, WAPT.hr_cos, WAPT.hr_poly, WAPT.unif_cos)
+    print(paste("Elk - Made it through the models only"))
     modelnum.wapt <- length(mdlist)
     model_results.wapt <- list()
     Copy.df.wapt <- OL()$DistancePreInput.WAPT
@@ -412,7 +438,7 @@ print(paste("HORS Total=", HORS_n))
     CleanHistData.WAPT["distance"] <- CleanHistData.WAPT$DistancePerp
     CleanHistData.WAPT["object"] <- seq.int(nrow(CleanHistData.WAPT))
     U.list.WAPT <- split(CleanHistData.WAPT, CleanHistData.WAPT$Aircraft)
-
+    print(paste("Elk - Made it through the ulist section only"))
     j=0
     for (j in 1:modelnum.wapt) {
       if(is.null(mdlist[[j]])){next}
@@ -429,11 +455,13 @@ print(paste("HORS Total=", HORS_n))
       Vector[10] <- mdlist[[j]]$ddf$dsmodel[2]
             model_results.wapt[[j]] <- Vector
     }
-
+    print(paste("Elk - Made it through the models and loop"))
     model_result_df.WAPT <- as.data.frame(do.call("rbind", model_results.wapt))
     colnames(model_result_df.WAPT) <- c("Model description", "AIC", "Nhat", "CV", "Nlcl", "Nucl", "Dhat", "Dlcl", "Ducl")
     best.wapt <- model_result_df.WAPT[which.min(model_result_df.WAPT$AIC),]
     #  ddf.1.mude<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
+    print(paste("Elk best model"))
+    print(best.wapt)
     list(model_result_df.wapt=model_result_df.WAPT, ddf.1.wapt=WAPT.hn_cos, best.wapt = best.wapt, Calf_ratio.WAPT=Calf_ratio.WAPT, Bull_ratio.WAPT=Bull_ratio.WAPT, Bull_n.WAPT=Bull_n.WAPT, U.list.WAPT=U.list.WAPT)
   })
   OL.HORS <- eventReactive(OL(), {
@@ -693,8 +721,8 @@ print(paste("HORS Total=", HORS_n))
                                 round((sum(OL()$datasheet$MOOS.Bull.L)/(OL()$Bull_n - sum(OL()$datasheet$MOOS.Bull.N)))*100,1), "% were large. In addition to moose, ",
                                 OL()$WTD_n, " White-tailed deer, ", OL()$MUDE_n, " Mule Deer, and ", OL()$WAPT_n," elk were observed during the survey. ")
   })
-  output$MOOS_TAB2 = DT::renderDataTable(OL()$ddf.1.moos$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
-  output$MOOS_TAB1 = DT::renderDataTable(OL()$ddf.1.moos$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
+  output$MOOS_TAB2 = DT::renderDataTable(round(as.data.frame(OL()$ddf.1.moos$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
+  output$MOOS_TAB1 = DT::renderDataTable(fun.fixDest(OL()$ddf.1.moos$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
   output$MOOS_AIRDF <- renderUI({ get_plot_output_list(OL()$U.list) })
 
   output$MUDE_QQ <- renderPlot({ddf.gof(OL.MD()$ddf.1.mude$ddf) })
@@ -835,9 +863,9 @@ print(paste("HORS Total=", HORS_n))
   })
   output$MD_DF <- renderPlot({plot(OL.MD()$ddf.1.mude, main=("Global detection function for mule deer, HN-Cos, no truncation"))})
   output$MUDE_TAB = DT::renderDataTable(OL.MD()$model_result_df.MUDE, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for mule deer. Truncation distance was ",OL()$truncvalue))
-  output$MUDE_TAB2 = DT::renderDataTable(OL.MD()$ddf.1.mude$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
-  output$MUDE_TAB1 = DT::renderDataTable(OL.MD()$ddf.1.mude$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
-  output$MUDE_AIRDF <- renderUI({ get_plot_output_list(OL()$U.list.MD) })
+  output$MUDE_TAB2 = DT::renderDataTable(round(as.data.frame(OL.MD()$ddf.1.mude$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
+  output$MUDE_TAB1 = DT::renderDataTable(fun.fixDest(OL.MD()$ddf.1.mude$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
+  output$MUDE_AIRDF <- renderUI({get_plot_output_list(OL()$U.list.MD) })
 
 
   output$WTDE_TXT = renderText({
@@ -993,8 +1021,8 @@ print(paste("HORS Total=", HORS_n))
   })
   output$WTDE_DF <- renderPlot({plot(OL.WT()$ddf.1.wtde, main=("Global detection function for white-tailed deer, HN-Cos, no truncation"))})
   output$WTDE_QQ <- renderPlot({ddf.gof(OL.WT()$ddf.1.wtde$ddf) })
-  output$WTDE_TAB2 = DT::renderDataTable(OL.WT()$ddf.1.wtde$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
-  output$WTDE_TAB1 = DT::renderDataTable(OL.WT()$ddf.1.wtde$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
+  output$WTDE_TAB2 = DT::renderDataTable(round(as.data.frame(OL.WT()$ddf.1.wtde$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
+  output$WTDE_TAB1 = DT::renderDataTable(fun.fixDest(OL.WT()$ddf.1.wtde$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
   output$WTDE_AIRDF <- renderUI({ get_plot_output_list(OL()$U.list.WT) })
 
 
@@ -1145,8 +1173,8 @@ print(paste("HORS Total=", HORS_n))
           OL()$WTD_n, " White-tailed deer, ", OL()$MOOS_n, " Mule Deer, and ", OL()$MUDE_n," mule deer were observed during the survey. ")
   })
   output$WAPT_TAB = DT::renderDataTable(OL.WAPT()$model_result_df.wapt, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for elk. Truncation distance was ",OL()$truncvalue))
-  output$WAPT_TAB2 = DT::renderDataTable(OL.WAPT()$ddf.1.wapt$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
-  output$WAPT_TAB1 = DT::renderDataTable(OL.WAPT()$ddf.1.wapt$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
+  output$WAPT_TAB2 = DT::renderDataTable(round(as.data.frame(OL.WAPT()$ddf.1.wapt$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
+  output$WAPT_TAB1 = DT::renderDataTable(fun.fixDest(OL.WAPT()$ddf.1.wapt$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
   output$WAPT_AIRDF <- renderUI({ get_plot_output_list(OL.WAPT()$U.list.WAPT) })
 
 
@@ -1290,8 +1318,8 @@ print(paste("HORS Total=", HORS_n))
           round(OL.HORS()$Calf_ratio.HORS, 2), ".")
   })
   output$HORS_TAB = DT::renderDataTable(OL.HORS()$model_result_df.hors, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for elk. Truncation distance was ",OL()$truncvalue))
-  output$HORS_TAB2 = DT::renderDataTable(OL.HORS()$ddf.1.hors$dht$clusters$summary, options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
-  output$HORS_TAB1 = DT::renderDataTable(OL.HORS()$ddf.1.hors$dht$clusters$D, options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
+  output$HORS_TAB2 = DT::renderDataTable(round(as.data.frame(OL.HORS()$ddf.1.hors$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
+  output$HORS_TAB1 = DT::renderDataTable(fun.fixDest(OL.HORS()$ddf.1.hors$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
   output$HORS_AIRDF <- renderUI({ get_plot_output_list(OL.HORS()$U.list.HORS) })
 
 
