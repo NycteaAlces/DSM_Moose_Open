@@ -846,7 +846,7 @@ shinyServer(function(input, output,session) {#----
           round(as.numeric(as.character(OL.MD()$best.mude$Nlcl)), 0)," - ",
           round(as.numeric(as.character(OL.MD()$best.mude$Nucl)), 0),
           ") within the study area. In total, ",
-          OL()$MUDE_n," mule deer were observed in ",
+          sum(OL()$DistanceInput2$MUDE.GroupSize)," mule deer were observed in ",
           OL.MD()$ddf.1.mude$dht$clusters$summary$n[1],
           " groups during the survey (sampling fraction = ",
           round((OL()$MUDE_n/((OL.MD()$ddf.1.mude$dht$individuals$N$Estimate[1]*1000)*100)),1),
