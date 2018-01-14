@@ -104,6 +104,7 @@ shinyServer(function(input, output,session) {#----
     datasheet.md <- datasheet
 
     datasheet.2 <- unique(datasheet[ which(datasheet$MOOS.GroupSize >0),])
+    datasheet.2 <- datasheet.2[complete.cases(datasheet.2[,48]),] #remove NAs for area and region
     DistancePreInput.MOOS.2 <- anti_join(transflown, datasheet.2, by=c("Transect.ID","Stratum"))
     DistancePreInput.MOOS.2 <- unique(DistancePreInput.MOOS.2)
     DistancePreInput.MOOS <- merge(datasheet.2, DistancePreInput.MOOS.2, all=T)
@@ -112,6 +113,7 @@ shinyServer(function(input, output,session) {#----
     DistanceInput <- DistanceInput[ order(DistanceInput$Region.Label, DistanceInput$TID, DistanceInput$size), ]
 
     datasheet.2.MD <- unique(datasheet.md[ which(datasheet.md$MUDE.GroupSize >0),])
+    datasheet.2.MD <- datasheet.2.MD[complete.cases(datasheet.2.MD[,48]),] #remove NAs for area and region
     DistancePreInput.MUDE.2 <- anti_join(transflown, datasheet.2.MD, by=c("Transect.ID","Stratum"))
     DistancePreInput.MUDE.2 <- unique(DistancePreInput.MUDE.2)
     DistancePreInput.MUDE <- merge(datasheet.2.MD, DistancePreInput.MUDE.2, all=T)
@@ -126,6 +128,7 @@ shinyServer(function(input, output,session) {#----
 
 
     datasheet.2.WT <- unique(datasheet.md[ which(datasheet.md$WTDE.GroupSize >0),])
+    datasheet.2.WT <- datasheet.2.WT[complete.cases(datasheet.2.WT[,48]),] #remove NAs for area and region
     DistancePreInput.WTDE.2 <- anti_join(transflown, datasheet.2.WT, by=c("Transect.ID","Stratum"))
     DistancePreInput.WTDE.2 <- unique(DistancePreInput.WTDE.2)
     DistancePreInput.WTDE <- merge(datasheet.2.WT, DistancePreInput.WTDE.2, all=T)
@@ -136,6 +139,7 @@ shinyServer(function(input, output,session) {#----
     DistanceInput2.WT <- unique(DistanceInput2.WT)
 
     datasheet.2.WAPT <- unique(datasheet.md[ which(datasheet.md$WAPT.GroupSize >0),])
+    datasheet.2.WAPT <- datasheet.2.WAPT[complete.cases(datasheet.2.WAPT[,48]),] #remove NAs for area and region
     DistancePreInput.WAPT.2 <- anti_join(transflown, datasheet.2.WAPT, by=c("Transect.ID","Stratum"))
     DistancePreInput.WAPT.2 <- unique(DistancePreInput.WAPT.2)
     DistancePreInput.WAPT <- merge(datasheet.2.WAPT, DistancePreInput.WAPT.2, all=T)
@@ -147,6 +151,7 @@ shinyServer(function(input, output,session) {#----
 
     datasheet.2.HORS <- unique(datasheet[ which(datasheet$HORS.GroupSize >0),])
     print(head(datasheet.2.HORS))
+    datasheet.2.HORS <- datasheet.2.HORS[complete.cases(datasheet.2.HORS[,48]),] #remove NAs for area and region
     DistancePreInput.HORS.2 <- anti_join(transflown, datasheet.2.HORS, by=c("Transect.ID","Stratum"))
     DistancePreInput.HORS.2 <- unique(DistancePreInput.HORS.2)
     DistancePreInput.HORS <- merge(datasheet.2.HORS, DistancePreInput.HORS.2, all=T)
@@ -210,21 +215,33 @@ shinyServer(function(input, output,session) {#----
     moos.unif_cos <- NULL
   #  moos.hn_cos_2 <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos", order = 2)
   #  moos.hn_cos_3 <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos", order = 3)
+    print(paste("HN(COS) starting -MOOS:"))
     moos.hn_cos   <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "cos")
+    print(paste("HN(HERM) starting -MOOS:"))
     moos.hn_herm  <- ds(DistanceInput2, truncation = truncvalue(), key="hn", adjustment = "herm")
-    moos.hr_herm  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "herm")
+ #   print(paste("HR(HERM) starting -MOOS:"))
+ #   moos.hr_herm  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "herm")
+    print(paste("HR(COS) starting -MOOS:"))
     moos.hr_cos   <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "cos")
-    moos.hr_poly  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "poly")
+  #  print(paste("HR(POLY) starting -MOOS:"))
+  #  moos.hr_poly  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "poly")
+    
+    #moos.hr_poly  <- ds(DistanceInput2, truncation = truncvalue(), key="hr", adjustment = "poly")
+    print(paste("UN(COS) starting -MOOS:"))
     moos.unif_cos <- ds(DistanceInput2, truncation = truncvalue(), key="unif", adjustment = "cos")
+    print(paste("UN(POLY) starting -MOOS:"))
+    moos.unif_poly  <- ds(DistanceInput2, truncation = truncvalue(), key="unif", adjustment = "poly")
    # mlist <- list(moos.hn_cos, moos.hr_cos, moos.hr_poly, moos.unif_cos,  moos.hn_cos_2,  moos.hn_cos_3, moos.hn_herm,  moos.hr_herm)
-    mlist <- list(moos.hn_cos, moos.hr_cos, moos.hr_poly, moos.unif_cos,  moos.hn_herm,  moos.hr_herm)
+    mlist <- list(moos.hn_cos, moos.hn_herm, moos.hr_cos, moos.unif_cos,  moos.unif_poly)
+    mnames <- as.data.frame(c("HN(Cos)", "HN(Herm)", "HR(Cos)", "UN(Cos)","UN(Poly)" ))
 
 
     modelnum <- length(mlist)
     model_results <- list()
     for (i in 1:modelnum) { #return results for each candidate moose model such that they can simply be accessed for reporting in global env
       Vector <- numeric(9) #create vector
-      Vector[1] <- fun.getModDescr(as.character(mlist[[i]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
+#      Vector[1] <- fun.getModDescr(as.character(mlist[[i]]$ddf$dsmodel[2])) #model description (placeholder for more appropriate model names)
+      Vector[1] <- 
       Vector[2] <- as.vector(as.numeric(round(mlist[[i]]$ddf$criterion,2))) #AIC value (uncorrected - currently, need to include small smaple size adjustment)
       Vector[3] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$Estimate[results_num_index]*1000,0))) #Population estimate for study area (all strata)
       Vector[4] <- as.vector(as.numeric(round(mlist[[i]]$dht$individuals$N$cv[results_num_index],3))) #Coefficient of variation for the population estimate
@@ -291,11 +308,17 @@ shinyServer(function(input, output,session) {#----
     mude.hr_poly  <- NULL
     mude.unif_cos <- NULL
 
+    print(paste("HN(COS) starting -MUDE:"))
     mude.hn_cos   <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hn", adjustment = "cos")
+    print(paste("HN(HERM) starting -MUDE:"))
     mude.hn_herm  <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hn", adjustment = "herm")
+    print(paste("HR(HERM) starting -MUDE:"))
     mude.hr_herm  <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hr", adjustment = "herm")
+    print(paste("HR(COS) starting -MUDE:"))
     mude.hr_cos   <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hr", adjustment = "cos")
+    print(paste("HR(POLY) starting -MUDE:"))
     mude.hr_poly  <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="hr", adjustment = "poly")
+    print(paste("UN(COS) starting -MUDE:"))
     mude.unif_cos <- ds(OL()$DistanceInput2.MD, truncation = truncvalue(), key="unif", adjustment = "cos")
     results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(mude.hn_cos,mude.hn_herm, mude.hr_herm, mude.hr_cos, mude.hr_poly, mude.unif_cos)
@@ -351,12 +374,16 @@ shinyServer(function(input, output,session) {#----
     WTDE.hr_cos  <- NULL
     WTDE.hr_poly  <- NULL
     WTDE.unif_cos <- NULL
-
+    print(paste("HN(COS) starting -WTDE:"))
     WTDE.hn_cos   <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
+    print(paste("HN(HERM) starting -WTDE:"))
     WTDE.hn_herm  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "herm")
     #WTDE.hr_herm  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "herm")
+    print(paste("HR(COS) starting -WTDE:"))
     WTDE.hr_cos   <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "cos")
+    print(paste("HR(POLY) starting -WTDE:"))
     WTDE.hr_poly  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "poly")
+    print(paste("UN(COS) starting -WTDE:"))
     WTDE.unif_cos <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="unif", adjustment = "cos")
     results_num_index <- as.integer(OL()$results_num_index)
     mdlist <-     list(WTDE.hn_cos,WTDE.hn_herm, WTDE.hr_cos, WTDE.hr_poly, WTDE.unif_cos)
@@ -403,6 +430,8 @@ shinyServer(function(input, output,session) {#----
   })
   OL.WAPT <- eventReactive(OL(), {
     print("I'm into elk NOW")
+    print(head(OL()$DistanceInput2.WAPT))
+    summary(OL()$DistanceInput2.WAPT)
     Calf_n.WAPT <-  sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Calf)
     Cow_n.WAPT <- sum(OL()$datasheet[!is.na(OL()$datasheet$WAPT.GroupSize),]$WAPT.Cow)
     Calf_ratio.WAPT <- Calf_n.WAPT / Cow_n.WAPT
@@ -415,11 +444,17 @@ shinyServer(function(input, output,session) {#----
     WAPT.hr_cos  <- NULL
     WAPT.hr_poly  <- NULL
     WAPT.unif_cos <- NULL
+    print(paste("HN(COS) starting -WAPT:"))
     WAPT.hn_cos   <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hn", adjustment = "cos")
-    WAPT.hn_herm  <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hn", adjustment = "herm")
+    print(paste("skipping - HN(HERM) starting -WAPT"))
+ #   WAPT.hn_herm  <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hn", adjustment = "herm")
+    print(paste("HR(HERM) starting -WAPT"))
     WAPT.hr_herm  <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hr", adjustment = "herm")
+    print(paste("HR(COS) starting -WAPT"))
     WAPT.hr_cos   <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hr", adjustment = "cos")
+    print(paste("HN(POLY) starting -WAPT"))
     WAPT.hr_poly  <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hr", adjustment = "poly")
+    print(paste("UN(COS) starting -WAPT"))
     WAPT.unif_cos <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="unif", adjustment = "cos")
     # WAPT.hn_cos   <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hn", adjustment = "cos")
     # WAPT.hn_herm  <- ds(OL()$DistanceInput2.WAPT, truncation = truncvalue(), key="hn", adjustment = "herm")
@@ -442,6 +477,7 @@ shinyServer(function(input, output,session) {#----
     CleanHistData.WAPT["object"] <- seq.int(nrow(CleanHistData.WAPT))
     U.list.WAPT <- split(CleanHistData.WAPT, CleanHistData.WAPT$Aircraft)
     print(paste("Elk - Made it through the ulist section only"))
+
     j=0
     for (j in 1:modelnum.wapt) {
       if(is.null(mdlist[[j]])){next}
@@ -456,7 +492,7 @@ shinyServer(function(input, output,session) {#----
       Vector[8] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$lcl[results_num_index]*1000,2))) #lower 95% confidence interval for the density estimate
       Vector[9] <- as.vector(as.numeric(round(mdlist[[j]]$dht$individuals$D$ucl[results_num_index]*1000,2))) #upper 95% confidence interval for the density estimate
       Vector[10] <- mdlist[[j]]$ddf$dsmodel[2]
-            model_results.wapt[[j]] <- Vector
+      model_results.wapt[[j]] <- Vector
     }
     print(paste("Elk - Made it through the models and loop"))
     model_result_df.WAPT <- as.data.frame(do.call("rbind", model_results.wapt))
@@ -465,6 +501,8 @@ shinyServer(function(input, output,session) {#----
     #  ddf.1.mude<-ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
     print(paste("Elk best model"))
     print(best.wapt)
+    print(paste("aLL ELK MODELS:"))
+    print(model_result_df.WAPT)
     list(model_result_df.wapt=model_result_df.WAPT, ddf.1.wapt=WAPT.hn_cos, best.wapt = best.wapt, Calf_ratio.WAPT=Calf_ratio.WAPT, Bull_ratio.WAPT=Bull_ratio.WAPT, Bull_n.WAPT=Bull_n.WAPT, U.list.WAPT=U.list.WAPT)
   })
   OL.HORS <- eventReactive(OL(), {
