@@ -347,19 +347,19 @@ shinyServer(function(input, output,session) {#----
     #Create null objects to avoid erros when adding empty (non-converging) models to mdlist
     WTDE.hn_cos  <- NULL
     WTDE.hn_herm <- NULL
-    WTDE.hr_herm <- NULL
+    #WTDE.hr_herm <- NULL
     WTDE.hr_cos  <- NULL
     WTDE.hr_poly  <- NULL
     WTDE.unif_cos <- NULL
 
     WTDE.hn_cos   <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "cos")
     WTDE.hn_herm  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hn", adjustment = "herm")
-    WTDE.hr_herm  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "herm")
+    #WTDE.hr_herm  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "herm")
     WTDE.hr_cos   <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "cos")
     WTDE.hr_poly  <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="hr", adjustment = "poly")
     WTDE.unif_cos <- ds(OL()$DistanceInput2.WT, truncation = truncvalue(), key="unif", adjustment = "cos")
     results_num_index <- as.integer(OL()$results_num_index)
-    mdlist <-     list(WTDE.hn_cos,WTDE.hn_herm, WTDE.hr_herm, WTDE.hr_cos, WTDE.hr_poly, WTDE.unif_cos)
+    mdlist <-     list(WTDE.hn_cos,WTDE.hn_herm, WTDE.hr_cos, WTDE.hr_poly, WTDE.unif_cos)
     modelnum.md <- length(mdlist)
     model_results.md <- list()
     j=0
@@ -892,13 +892,7 @@ shinyServer(function(input, output,session) {#----
            round((OL()$WTDE_n/((OL.WT()$ddf.1.wtde$dht$individuals$N$Estimate[1]*1000)*100)),1),
            "%). The unadjusted  observed fawn ratio and buck ratio (i.e. not corrected for effort between strata) were ",
            round(OL.WT()$Calf_ratio.WT, 2), " and ",
-           round(OL.WT()$Bull_ratio.WT, 2), " , respectively. Of the bucks observed, ",
-           round((sum(OL()$datasheet$WTDE.Buck.NA)/OL.WT()$Bull_n.WT)*100,1),
-           "% had already shed their antlers. Of those bulls still with antlers, ",
-           round((sum(OL()$datasheet$WTDE.Bull.S)/(OL.WT()$Bull_n.WT - sum(OL()$datasheet$WTDE.Bull.NA)))*100,1), "% were small,",
-           round((sum(OL()$datasheet$WTDE.Bull.M)/(OL.WT()$Bull_n.WT - sum(OL()$datasheet$WTDE.Bull.NA)))*100,1), "% were medium, and ",
-           round((sum(OL()$datasheet$WTDE.Bull.L)/(OL.WT()$Bull_n.WT - sum(OL()$datasheet$WTDE.Bull.NA)))*100,1), "% were large. In addition to mule deer, ",
-           OL()$WTD_n, " White-tailed deer, ", OL()$MOOS_n, " Mule Deer, and ", OL()$WAPT_n," elk were observed during the survey. ")
+           round(OL.WT()$Bull_ratio.WT, 2), " , respectively.")
    })
   output$WTDE_TAB = DT::renderDataTable(OL.WT()$model_result_df.wtde, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for white-tailed deer. Truncation distance was ",OL()$truncvalue))
   output$WTDE_MAP <- renderPlot({
