@@ -41,7 +41,7 @@ shinyServer(function(input, output,session) {#----
     adj = substr(x, as.integer((gregexpr("adj.series = \"", x)[[1]][1]))+14, as.integer(regexpr("\", adj.order", x)[[1]][1])-1) #get adjustement term
     adj.ord = substr(x, as.integer((gregexpr("adj.order = ", x)[[1]][1]))+12, as.integer(regexpr(", adj.scale = \"" , x)[[1]][1])-1) #get adjustment order
     modeldesc_2 <- gsub(" ", "", paste(key, "(", adj, ") - {",adj.ord,"}"), fixed=TRUE) #Make pretty words
-    return(as.vector(modeldesc_2))
+    return(as.data.frame(modeldesc_2))
   }
 
     fun.fixDest <- function(ddf.1.D) {
@@ -133,7 +133,7 @@ shinyServer(function(input, output,session) {#----
     DistanceInput.WT<- as.data.frame(cbind(object.ID = as.numeric(DistancePreInput.WTDE$ID), Region.Label= DistancePreInput.WTDE$Stratum,Area = as.numeric(DistancePreInput.WTDE$Stratum.Area), TID = as.numeric(DistancePreInput.WTDE$Transect.ID), TLENGTH = as.numeric(DistancePreInput.WTDE$Transect.Length), Effort=as.numeric(DistancePreInput.WTDE$Length)/1000, distance= as.numeric(DistancePreInput.WTDE$DistancePerp), size=as.numeric(DistancePreInput.WTDE$WTDE.GroupSize),CC=as.factor(DistancePreInput.WTDE$Covariate.1), Activity=as.factor(DistancePreInput.WTDE$Covariate.2)))
     DistanceInput.WT <- DistanceInput.MD[ order(DistanceInput.WT$Region.Label, DistanceInput.WT$TID, DistanceInput.WT$size), ]
     DistanceInput2.WT <- as.data.frame(cbind(object = as.numeric(DistancePreInput.WTDE$ID), Region.Label= DistancePreInput.WTDE$Stratum,Area = as.numeric(DistancePreInput.WTDE$Stratum.Area), Sample.Label = as.numeric(DistancePreInput.WTDE$Transect.ID), Effort = as.numeric(DistancePreInput.WTDE$Transect.Length), distance= as.numeric(DistancePreInput.WTDE$DistancePerp), size=as.numeric(DistancePreInput.WTDE$WTDE.GroupSize),CC=as.factor(DistancePreInput.WTDE$Covariate.1), Activity=as.factor(DistancePreInput.WTDE$Covariate.2)))
-    DistanceInput2.WT <- unique(DistanceInput2.MD)
+    DistanceInput2.WT <- unique(DistanceInput2.WT)
 
     datasheet.2.WAPT <- unique(datasheet.md[ which(datasheet.md$WAPT.GroupSize >0),])
     DistancePreInput.WAPT.2 <- anti_join(transflown, datasheet.2.WAPT, by=c("Transect.ID","Stratum"))
@@ -179,7 +179,9 @@ shinyServer(function(input, output,session) {#----
     WTD_n  <- sum(datasheet[!is.na(datasheet$WTDE.GroupSize),]$WTDE.GroupSize)
     WTD_n2 <- sum(datasheet$WTDE.GroupSize)
     MUDE_n <- sum(datasheet[!is.na(datasheet$MUDE.GroupSize),]$MUDE.GroupSize)
-    MD_n2 <- sum(datasheet$MUDE.GroupSize)
+    MD_n2 <- sum(DistanceInput2.MD$size[!is.na(DistanceInput2$size)]) 
+    print(summary(DistanceInput2.MD))
+    #MD_n2 <- sum(datasheet$MUDE.GroupSize)
     WAPT_n <- sum(datasheet[!is.na(datasheet$WAPT.GroupSize),]$WAPT.GroupSize)
     WAPT_n2 <- sum(datasheet$WAPT.GroupSize)
     HORS_n <- sum(datasheet[!is.na(datasheet$HORS.GroupSize),]$HORS.GroupSize)
@@ -336,6 +338,7 @@ shinyServer(function(input, output,session) {#----
   })
   OL.WT   <- eventReactive(OL(), {
     print("I'm into wtd NOW")
+    print(OL()$DistanceInput2.WT)
     Calf_n.WT<-  sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Fawn)
     Cow_n.WT <- sum(OL()$datasheet[!is.na(OL()$datasheet$WTDE.GroupSize),]$WTDE.Doe)
     Calf_ratio.WT <- Calf_n.WT / Cow_n.WT
@@ -846,7 +849,7 @@ shinyServer(function(input, output,session) {#----
           round(as.numeric(as.character(OL.MD()$best.mude$Nlcl)), 0)," - ",
           round(as.numeric(as.character(OL.MD()$best.mude$Nucl)), 0),
           ") within the study area. In total, ",
-          sum(OL()$DistanceInput2$MUDE.GroupSize)," mule deer were observed in ",
+          OL()$MUDE_n," mule deer were observed in ",
           OL.MD()$ddf.1.mude$dht$clusters$summary$n[1],
           " groups during the survey (sampling fraction = ",
           round((OL()$MUDE_n/((OL.MD()$ddf.1.mude$dht$individuals$N$Estimate[1]*1000)*100)),1),
