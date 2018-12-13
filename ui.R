@@ -9,9 +9,9 @@ ipak <- function(pkg){
 }
 
 # usage
-packages <- c("shiny", "RODBC","dplyr","Distance","mrds", "ggplot2", "rgdal",
+packages <- c("shiny", "RODBC","dplyr", "tidyverse", "Matrix", "mgcv", "readr","Distance","mrds", "ggplot2", "rgdal",
               "rgeos","dsm","knitr","maptools","gridExtra","sp", "DT", "kableExtra", "ggmap",
-              "investr", "raster", "tidyverse", "Matrix", "mgcv", "readr")
+              "investr", "raster")
 ipak(packages)
 
 shinyUI(pageWithSidebar(
