@@ -657,7 +657,7 @@ shinyServer(function(input, output,session) {#----
     colnames(pt.df) <- c("GrpX","GrpY","size")
     pt.shp.sp <- as(pt.shp, 'SpatialPoints')
     #line.shp <-spTransform(survey.transects359.TTM, CRS("+proj=longlat +datum=WGS84"))
-    map <- ggmap::get_googlemap(center = c(lon=gCentroid(wmu.shp)$x, lat=gCentroid(wmu.shp)$y), maptype="hybrid",zoom=9, )#, markers =
+    #map <- ggmap::get_googlemap(center = c(lon=gCentroid(wmu.shp)$x, lat=gCentroid(wmu.shp)$y), maptype="hybrid",zoom=9, )#, markers =
     proj4string(trans.flown.splat.df)<- CRS("+proj=tmerc +lat_0=0 +lon_0=-115 +k=0.9992 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs")
     transflown.shp <- spTransform(trans.flown.splat.df, CRS("+proj=longlat +datum=WGS84"))
     spat.list <- list(pt.shp, wmu.shp)
@@ -695,7 +695,7 @@ shinyServer(function(input, output,session) {#----
     # googbackgrnd <- raster::mask(gmap.rast, as(raster::extent(minx, maxx, miny, maxy),'SpatialPolygons' ))#clip raster with max extent
     # googbackgrnd.df <- data.frame(rasterToPoints(googbackgrnd))
     list(
-      map=map,
+    #  map=map,
       wmu.shp=wmu.shp,
       transflown.shp = transflown.shp,
       pt.df = pt.df,
