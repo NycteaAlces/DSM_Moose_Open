@@ -707,7 +707,7 @@ shinyServer(function(input, output,session) {#----
   output$MOOS_DF <- renderPlot({ plot(OL()$ddf.1.moos, main=paste("Global detection function for moose, HN-Cos, truncation=",OL()$truncvalue[1]))})
   output$MOOS_QQ <- renderPlot({ ddf.gof(OL()$ddf.1.moos$ddf) })
   output$MOOS_TAB = DT::renderDataTable(OL()$model_result_df, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for moose. Truncation distance was ",OL()$ddf.1.moos$ddf$meta.data$width) )
-  output$MOOS_MAP <- renderPlot({
+  output$MOOS_MAP2 <- renderPlot({
 
  #   p <- ggplot(googbackgrnd.df)+geom_point(aes(x=x, y=y, col=rgb(layer.1/255, layer.2/255, layer.3/255))) + scale_color_identity()
  #   p <- p + geom_polygon(data = wmu.shp, fill="light blue", aes(x=long, y=lat, group=group, alpha=0.5))
@@ -736,7 +736,7 @@ shinyServer(function(input, output,session) {#----
 
 
   })
-  output$MOOS_MAP2 <- renderPlot({
+  output$MOOS_MAP <- renderPlot({
      p <- ggplot ()
      p <- p + geom_polygon(data = OL.MAP()$survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
      p <- p + geom_path(aes(x=long,y=lat,group=group), data = OL.MAP()$trans.flown.splat.df, colour = "gray" )
