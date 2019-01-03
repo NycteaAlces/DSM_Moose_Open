@@ -719,21 +719,13 @@ shinyServer(function(input, output,session) {#----
  #   p <- p + geom_point(data =as.data.frame(pt.df), aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) ) + coord_fixed(1.3)
  # #  p <- p + geom_point(aes(x=))
  #      plot(p)
-
-
-
-
-
-
-
-      ggmap(OL.MAP()$map, extent="panel", maprange=FALSE) +
-        geom_polygon(data = OL.MAP()$wmu.shp, fill="light blue", color="purple", aes(x=long, y=lat, group=group, alpha=0.1),size=0.7, alpha=0.1) +
-        geom_path(aes(x=long,y=lat,group=group), data = OL.MAP()$transflown.shp, colour = "yellow", alpha=0.8 )+
-        # p <- p + geom_path(aes(x=(coordinates(transflown.shp)[[1]][[1]][,1]),y=coordinates(transflown.shp)[[1]][[1]][,2],group=group), data = as.data.frame(transflown.shp), colour = "gray" )
-        #geom_line(aes(x=long,y=lat,group=group), data = line.shp, colour = "gray" ) +
-        #geom_point(data = m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
-        geom_point(data =as.data.frame(OL.MAP()$pt.df), aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) ) + coord_fixed(1.3)
-
+     p <- ggplot ()
+     p <- p + geom_polygon(data = OL.MAP()$survey.area359.TTM, fill="light blue", aes(x=long, y=lat, group=group)) + coord_equal()
+     p <- p + geom_path(aes(x=long,y=lat,group=group), data = OL.MAP()$trans.flown.splat.df, colour = "gray" )
+     p <- p + geom_point(data = OL.MAP()$m1, aes(x=GrpX, y=GrpY, size = size), colour = "red", alpha=I(0.5) )
+     p <- p + labs(fill = "MDSTRATA", x = "Easting (10TM AEP Forest)", y = "Northing (10TM AEP Forest)")
+     p <- p + geom_point(aes(x=))
+     plot(p)
 
   })
   output$MOOS_MAP <- renderPlot({
