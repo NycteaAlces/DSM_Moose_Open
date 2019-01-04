@@ -891,7 +891,7 @@ shinyServer(function(input, output,session) {#----
   output$MUDE_TAB = DT::renderDataTable(OL.MD()$model_result_df.MUDE, options = list(lengthChange=FALSE), caption=paste("Table 1. Model results for candidate set of default models for mule deer. Truncation distance was ",OL()$truncvalue))
   output$MUDE_TAB2 = DT::renderDataTable(round(as.data.frame(OL.MD()$ddf.1.mude$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
   output$MUDE_TAB1 = DT::renderDataTable(fun.fixDest(OL.MD()$ddf.1.mude$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
-  output$MUDE_AIRDF <- renderUI({get_plot_output_list(OL()$U.list.MD) })
+  output$MUDE_AIRDF <- renderUI({get_plot_output_list(OL.MD()$U.list.MD) })
 
 
   output$WTDE_TXT = renderText({
@@ -1043,7 +1043,7 @@ shinyServer(function(input, output,session) {#----
   output$WTDE_QQ <- renderPlot({ddf.gof(OL.WT()$ddf.1.wtde$ddf) })
   output$WTDE_TAB2 = DT::renderDataTable(round(as.data.frame(OL.WT()$ddf.1.wtde$dht$clusters$summary)[,-1],3), options= list(lengthChange=F), caption ="Table 3. Results of distance sampling encounter rates, by stratum and combined. ") #%>% formatRound(c(2:7),1)%>% formatStyle(columns=c(2:7), 'text-align'='center')
   output$WTDE_TAB1 = DT::renderDataTable(fun.fixDest(OL.WT()$ddf.1.wtde$dht$clusters$D), options= list(lengthChange=F), caption ="Table 2. Results of distance sampling estimates, by stratum and combined. ") #%>% formatRound(c(2:4),1) %>% formatStyle(columns=c(2:4), 'text-align'='center')
-  output$WTDE_AIRDF <- renderUI({ get_plot_output_list(OL()$U.list.WT) })
+  output$WTDE_AIRDF <- renderUI({ get_plot_output_list(OL.WT()$U.list.WT) })
 
 
   output$WAPT_QQ <- renderPlot({ddf.gof(OL.WAPT()$ddf.1.wapt$ddf) })
