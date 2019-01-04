@@ -29,7 +29,7 @@ shinyUI(pageWithSidebar(
       tabPanel("Mule Deer", id="Mule Deer", textOutput("MUDE_TXT"), plotOutput("MUDE_MAP"), DT::dataTableOutput('MUDE_TAB'), DT::dataTableOutput("MUDE_TAB1"), plotOutput("MD_DF"),plotOutput("MUDE_QQ"), uiOutput("MUDE_AIRDF"), DT::dataTableOutput("MUDE_TAB2")),
       tabPanel("White-tailed Deer", id="White-tailed Deer", textOutput("WTDE_TXT"),  plotOutput("WTDE_MAP"), DT::dataTableOutput("WTDE_TAB"), DT::dataTableOutput("WTDE_TAB1"),plotOutput("WTDE_DF"), plotOutput("WTDE_QQ"), uiOutput("WTDE_AIRDF"), DT::dataTableOutput("WTDE_TAB2")),
       tabPanel("Elk", id="Elk", textOutput("WAPT_TXT"), plotOutput("WAPT_MAP"),DT::dataTableOutput("WAPT_TAB"), DT::dataTableOutput("WAPT_TAB1"),plotOutput("WAPT_DF"), plotOutput("WAPT_QQ"), uiOutput("WAPT_AIRDF"), DT::dataTableOutput("WAPT_TAB2")),#,DT::dataTableOutput("WAPT_TAB"), plotOutput("WAPT_DF"), plotOutput("WAPT_QQ")),
-      tabPanel("Horses", id="Horses", textOutput("HORS_TXT"), plotOutput("HORS_MAP"),DT::dataTableOutput("HORS_TAB"), DT::dataTableOutput("HORS_TAB1"), plotOutput("HORS_DF"), plotOutput("HORS_QQ"), uiOutput("HORS_AIRDF"), DT::dataTableOutput("HORS_TAB2")),#,DT::dataTableOutput("WAPT_TAB"), plotOutput("WAPT_DF"), plotOutput("WAPT_QQ")))
+      tabPanel("Horses", id="Horses", textOutput("HORS_TXT"), plotOutput("HORS_MAP"),DT::dataTableOutput("HORS_TAB"), DT::dataTableOutput("HORS_TAB1"), plotOutput("HORS_DF"), plotOutput("HORS_QQ"), uiOutput("HORS_AIRDF"), DT::dataTableOutput("HORS_TAB2"))#,DT::dataTableOutput("WAPT_TAB"), plotOutput("WAPT_DF"), plotOutput("WAPT_QQ")))
 
     ))
 ))
