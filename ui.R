@@ -20,7 +20,7 @@ shinyUI(pageWithSidebar(
               accept=c('.accdb', '.mdb')),
     fileInput('WMU_Shp', 'Step 2. Choose your WMU Polygon Shapefile File (Alberta 10TM) - Note include all shapefile components (i.e. *.shp, *.dbf, *.sbn, etc.)',
               accept=c('.shp','.dbf','.sbn','.sbx', '.shx','.prj','.cpg'), multiple=TRUE),
-    sliderInput("truncation", "Step 3: Choose right truncation distance", min=0, max=1000, value=425, step = 25)))
+    sliderInput("truncation", "Step 3: Choose right truncation distance", min=0, max=1000, value=425, step = 25)
 
   ),
   mainPanel(
