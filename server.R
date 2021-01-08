@@ -71,7 +71,7 @@ shinyServer(function(input, output,session) {#----
     #   myconn <- odbcDriverConnect('Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=//GOA/MyDocs/M/Mike.Russell/Analysis/R/Moose_R_Files/359_AUS Distance Survey Data Management Tool_20150223.accdb')
     DB <- paste("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=",inFile)
     myconn <- odbcDriverConnect(DB)
-    print(myconn)
+    paste(print(myconn))
     strat <- sqlFetch(myconn, "strata")
 
 
